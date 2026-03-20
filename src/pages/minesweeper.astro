@@ -80,7 +80,7 @@ import Layout from '../layouts/Layout.astro';
 
           <!-- Win / Lose overlay -->
           <div id="overlay"
-            class="absolute inset-0 hidden items-center justify-center"
+            class="absolute inset-0"
             style="background: rgba(13,16,20,0.92);">
             <div class="text-center px-8">
               <div id="ov-emoji" class="text-5xl mb-3"></div>
@@ -107,7 +107,7 @@ import Layout from '../layouts/Layout.astro';
   </main>
 </Layout>
 
-<style>
+<style is:global>
   /* Difficulty buttons */
   .diff-btn {
     padding: 4px 10px;
@@ -152,7 +152,11 @@ import Layout from '../layouts/Layout.astro';
   }
 
   /* Overlay */
-  #overlay { display: none; }
+  #overlay {
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
   #overlay.show { display: flex; }
 </style>
 
