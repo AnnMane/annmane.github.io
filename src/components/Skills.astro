@@ -4,16 +4,16 @@ const groups = [
     category: 'Data Visualization',
     color: '#f2c80f',
     skills: [
-      { name: 'Power BI',  note: 'DAX · Power Query · Data Modeling · Star Schema' },
       { name: 'Excel',     note: 'Pivot Tables · Power Query · Advanced Functions'  },
+      { name: 'Power BI',  note: 'DAX · Power Query · Data Modeling · Star Schema' },
     ],
   },
   {
     category: 'Languages & Databases',
     color: '#3776ab',
     skills: [
-      { name: 'Python', note: 'Pandas · NumPy · Matplotlib · BeautifulSoup' },
       { name: 'SQL',    note: 'PostgreSQL · Queries · Joins · Window Functions' },
+      { name: 'Python', note: 'Pandas · NumPy · Matplotlib · BeautifulSoup' },
     ],
   },
   {
@@ -22,7 +22,6 @@ const groups = [
     skills: [
       { name: 'Git & GitHub',    note: 'Version control · Collaboration' },
       { name: 'VS Code',         note: 'Primary IDE'                      },
-      { name: 'Alteryx',         note: 'Workflow automation · ETL'        },
       { name: 'Caseware IDEA',   note: 'Audit analytics'                  },
       { name: 'Linux / WSL',     note: 'Ubuntu terminal'                  },
     ],
@@ -31,9 +30,9 @@ const groups = [
     category: 'Certifications',
     color: '#7c3aed',
     skills: [
-      { name: 'Power BI Data Analyst Associate', note: 'Microsoft / Udemy' },
       { name: 'Python Bootcamp',                 note: 'Udemy · 2025'      },
       { name: 'SQL Bootcamp',                    note: 'Udemy'             },
+      { name: 'Power BI DA Associate',           note: 'In progress · Microsoft' },
     ],
   },
 ];
@@ -51,7 +50,6 @@ const groups = [
     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       {groups.map(group => (
         <div class="pbi-visual">
-          <!-- Visual header with colored top border -->
           <div class="pbi-header" style={`border-top: 3px solid ${group.color};`}>
             <span class="pbi-header-title" style={`color: ${group.color}; opacity: 0.85;`}>
               {group.category}
@@ -59,9 +57,8 @@ const groups = [
             <span class="pbi-header-dots">···</span>
           </div>
 
-          <!-- Skills list styled like a PBI table -->
           <div class="divide-y divide-[#2a2d35]">
-            {group.skills.map((skill, i) => (
+            {group.skills.map(skill => (
               <div class="px-4 py-3 hover:bg-[#111318] transition-colors">
                 <div class="text-[13px] font-medium text-[#e6edf3]">{skill.name}</div>
                 <div class="text-[11px] text-[#8b949e] mt-0.5">{skill.note}</div>

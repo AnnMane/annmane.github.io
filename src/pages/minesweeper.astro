@@ -1,0 +1,459 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+  title="Minesweeper — Anna Grzywa"
+  description="A browser Minesweeper faithful to the Python/Tkinter original — BFS flood-fill, combo scoring, three difficulty levels."
+>
+  <main class="pt-20 min-h-screen px-4 pb-12">
+    <div class="max-w-5xl mx-auto flex flex-col gap-4">
+
+      <!-- Info card -->
+      <div class="pbi-visual">
+        <div class="pbi-header" style="border-top: 3px solid #f59e0b;">
+          <span class="pbi-header-title" style="color: #f59e0b; opacity:1;">💣 Minesweeper</span>
+          <div class="flex items-center gap-4 text-[11px]">
+            <a href="https://github.com/AnnMane/minesweeper-python" target="_blank" rel="noopener"
+               class="text-[#8b949e] hover:text-[#e6edf3] transition-colors">GitHub ↗</a>
+            <a href="/#projects" class="text-[#8b949e] hover:text-[#e6edf3] transition-colors">← Projects</a>
+          </div>
+        </div>
+        <div class="px-6 py-4 flex flex-col sm:flex-row sm:items-center gap-4">
+          <p class="text-[13px] text-[#8b949e] flex-1">
+            Browser rebuild of the Python + Tkinter original. BFS flood-fill cascade, combo ×5 multiplier,
+            safe first click, three difficulty levels — all logic ported from
+            <code class="text-[#a78bfa] bg-[#7c3aed]/10 px-1.5 rounded">game_logic.py</code>.
+            Right-click or long-press to flag.
+          </p>
+          <div class="flex gap-1.5 flex-wrap shrink-0">
+            <span class="tech-badge">Python</span>
+            <span class="tech-badge">Tkinter</span>
+            <span class="tech-badge">JavaScript</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Game card -->
+      <div class="pbi-visual" id="game-card">
+        <!-- Header with difficulty selector -->
+        <div class="pbi-header">
+          <span class="pbi-header-title">Game Canvas</span>
+          <div class="flex" id="diff-btns">
+            <button class="diff-btn active" data-diff="Beginner">Beginner</button>
+            <button class="diff-btn" data-diff="Intermediate">Intermediate</button>
+            <button class="diff-btn" data-diff="Expert">Expert</button>
+          </div>
+        </div>
+
+        <!-- HUD -->
+        <div class="flex items-center justify-between px-5 py-2.5 border-b border-[#2a2d35] bg-[#0d1014]">
+          <div class="flex items-center gap-5 font-mono text-[13px]">
+            <span title="Mines remaining">
+              <span class="text-[#ff5252]">💣</span>
+              <span id="hud-mines" class="text-[#e6edf3] ml-1">10</span>
+            </span>
+            <span title="Time">
+              <span class="text-[#00d4ff]">⏱</span>
+              <span id="hud-timer" class="text-[#e6edf3] ml-1">0</span>
+              <span class="text-[#8b949e] text-[11px]">s</span>
+            </span>
+            <span title="Score">
+              <span class="text-[#f0c040]">★</span>
+              <span id="hud-score" class="text-[#f0c040] ml-1">0</span>
+            </span>
+            <span id="hud-combo" class="text-[#ff8c00] font-bold hidden" title="Combo multiplier">
+              ×<span id="hud-combo-val">1</span>
+            </span>
+          </div>
+          <button id="new-game-btn"
+            class="px-3 py-1 text-[12px] rounded-[3px] border border-[#2a2d35] text-[#8b949e] hover:text-[#e6edf3] hover:border-[#7c3aed] transition-colors">
+            New Game
+          </button>
+        </div>
+
+        <!-- Board wrapper (overflow for Expert mode) -->
+        <div class="relative">
+          <div id="board-wrap" class="overflow-auto p-4 flex justify-center">
+            <div id="board" class="inline-grid select-none"></div>
+          </div>
+
+          <!-- Win / Lose overlay -->
+          <div id="overlay"
+            class="absolute inset-0 hidden items-center justify-center"
+            style="background: rgba(13,16,20,0.92);">
+            <div class="text-center px-8">
+              <div id="ov-emoji" class="text-5xl mb-3"></div>
+              <div id="ov-title" class="text-2xl font-bold mb-1"></div>
+              <div id="ov-sub" class="text-[#8b949e] text-[13px] mb-6"></div>
+              <button id="ov-btn"
+                class="px-6 py-2 rounded-[3px] bg-[#7c3aed] hover:bg-[#6d28d9] text-white text-sm font-medium transition-colors">
+                Play Again
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="px-5 py-2.5 border-t border-[#2a2d35] flex flex-wrap gap-4 text-[11px] text-[#8b949e]">
+          <span><kbd class="px-1.5 py-0.5 bg-[#1a1d23] border border-[#2a2d35] rounded text-[10px]">LMB</kbd> Reveal</span>
+          <span><kbd class="px-1.5 py-0.5 bg-[#1a1d23] border border-[#2a2d35] rounded text-[10px]">RMB</kbd> Flag</span>
+          <span><kbd class="px-1.5 py-0.5 bg-[#1a1d23] border border-[#2a2d35] rounded text-[10px]">Hold</kbd> Flag (mobile)</span>
+          <span class="ml-auto text-[#f0c040]">Combo: reveal cells quickly for ×2–×5 score</span>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</Layout>
+
+<style>
+  /* Difficulty buttons */
+  .diff-btn {
+    padding: 4px 10px;
+    font-size: 11px;
+    color: #8b949e;
+    border-left: 1px solid #2a2d35;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .diff-btn:hover { color: #e6edf3; background: #1a1d23; }
+  .diff-btn.active { color: #f59e0b; background: rgba(245,158,11,0.08); }
+
+  /* Board grid */
+  #board {
+    gap: 1px;
+    background: #0d1014;
+  }
+
+  /* Cells */
+  .cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    cursor: pointer;
+    user-select: none;
+    border-radius: 2px;
+    transition: background 0.06s, transform 0.06s;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+  }
+  .cell-hidden   { background: #1e2a45; }
+  .cell-hidden:hover { background: #253555; transform: scale(0.94); }
+  .cell-flagged  { background: #0f3460; }
+  .cell-revealed { background: #0d1b2a; cursor: default; }
+  .cell-mine     { background: #7a0000; }
+  .cell-mine-hit { background: #cc0000; animation: pulse 0.4s ease-out; }
+
+  @keyframes pulse {
+    0%   { background: #ff2020; transform: scale(1.15); }
+    100% { background: #cc0000; transform: scale(1); }
+  }
+
+  /* Overlay */
+  #overlay { display: none; }
+  #overlay.show { display: flex; }
+</style>
+
+<script>
+  // ── Constants (from game_logic.py / constants.py) ────────────────────
+  const DIFFICULTIES = {
+    Beginner:     { rows: 9,  cols: 9,  mines: 10, factor: 1.0 },
+    Intermediate: { rows: 16, cols: 16, mines: 40, factor: 1.5 },
+    Expert:       { rows: 16, cols: 30, mines: 99, factor: 2.0 },
+  } as const;
+
+  const TILE_SIZES = { Beginner: 34, Intermediate: 28, Expert: 22 };
+
+  // Number colors from constants.py
+  const NUM_COLORS = [
+    '', '#00d4ff', '#00e676', '#ff5252',
+    '#7c4dff', '#ff6d00', '#00bcd4', '#e040fb', '#90a4ae',
+  ];
+
+  const COMBO_WINDOW_MS = 2000;
+  const COMBO_MAX       = 5;
+
+  type DiffKey = keyof typeof DIFFICULTIES;
+  interface Cell {
+    isMine: boolean; isRevealed: boolean; isFlagged: boolean; adjacent: number;
+  }
+  type GameStatus = 'waiting' | 'playing' | 'won' | 'lost';
+
+  // ── State ─────────────────────────────────────────────────────────────
+  let board:    Cell[][] = [];
+  let cellEls:  HTMLElement[][] = [];
+  let status:   GameStatus = 'waiting';
+  let diff:     DiffKey = 'Beginner';
+  let rows = 9, cols = 9, mineCount = 10, factor = 1.0;
+  let seconds = 0, score = 0, combo = 1, lastRevealMs = 0;
+  let timerRef: ReturnType<typeof setInterval> | null = null;
+
+  // ── DOM refs ──────────────────────────────────────────────────────────
+  const boardEl     = document.getElementById('board')!;
+  const hudMines    = document.getElementById('hud-mines')!;
+  const hudTimer    = document.getElementById('hud-timer')!;
+  const hudScore    = document.getElementById('hud-score')!;
+  const hudCombo    = document.getElementById('hud-combo')!;
+  const hudComboVal = document.getElementById('hud-combo-val')!;
+  const overlay     = document.getElementById('overlay')!;
+  const ovEmoji     = document.getElementById('ov-emoji')!;
+  const ovTitle     = document.getElementById('ov-title')!;
+  const ovSub       = document.getElementById('ov-sub')!;
+
+  // ── Init ──────────────────────────────────────────────────────────────
+  function newGame(d: DiffKey) {
+    if (timerRef) { clearInterval(timerRef); timerRef = null; }
+    diff = d;
+    const cfg = DIFFICULTIES[d];
+    rows = cfg.rows; cols = cfg.cols; mineCount = cfg.mines; factor = cfg.factor;
+
+    board = Array.from({ length: rows }, () =>
+      Array.from({ length: cols }, (): Cell => ({
+        isMine: false, isRevealed: false, isFlagged: false, adjacent: 0,
+      }))
+    );
+    status = 'waiting';
+    seconds = 0; score = 0; combo = 1; lastRevealMs = 0;
+
+    buildDOM();
+    updateHUD();
+    hideOverlay();
+  }
+
+  // ── Mine placement (safe first-click zone 3×3) ────────────────────────
+  function placeMines(exR: number, exC: number) {
+    const safe = new Set<number>();
+    for (let dr = -1; dr <= 1; dr++)
+      for (let dc = -1; dc <= 1; dc++) {
+        const r = exR + dr, c = exC + dc;
+        if (r >= 0 && r < rows && c >= 0 && c < cols) safe.add(r * cols + c);
+      }
+
+    const pool: [number,number][] = [];
+    for (let r = 0; r < rows; r++)
+      for (let c = 0; c < cols; c++)
+        if (!safe.has(r * cols + c)) pool.push([r, c]);
+
+    // Fisher-Yates shuffle
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+    pool.slice(0, mineCount).forEach(([r, c]) => (board[r][c].isMine = true));
+
+    // Adjacency
+    for (let r = 0; r < rows; r++)
+      for (let c = 0; c < cols; c++)
+        if (!board[r][c].isMine)
+          board[r][c].adjacent = neighbors(r, c).filter(([nr, nc]) => board[nr][nc].isMine).length;
+  }
+
+  function neighbors(r: number, c: number): [number,number][] {
+    const res: [number,number][] = [];
+    for (let dr = -1; dr <= 1; dr++)
+      for (let dc = -1; dc <= 1; dc++) {
+        if (!dr && !dc) continue;
+        const nr = r + dr, nc = c + dc;
+        if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) res.push([nr, nc]);
+      }
+    return res;
+  }
+
+  // ── Reveal (BFS flood-fill like game_logic.py) ────────────────────────
+  function reveal(r: number, c: number) {
+    const cell = board[r][c];
+    if (cell.isRevealed || cell.isFlagged) return;
+    if (status === 'won' || status === 'lost') return;
+
+    if (status === 'waiting') {
+      placeMines(r, c);
+      status = 'playing';
+      timerRef = setInterval(() => { seconds++; hudTimer.textContent = String(seconds); }, 1000);
+    }
+
+    if (cell.isMine) {
+      cell.isRevealed = true;
+      status = 'lost';
+      if (timerRef) { clearInterval(timerRef); timerRef = null; }
+      // Reveal all mines
+      for (let rr = 0; rr < rows; rr++)
+        for (let cc = 0; cc < cols; cc++)
+          if (board[rr][cc].isMine) board[rr][cc].isRevealed = true;
+      renderAll();
+      // Highlight hit mine
+      cellEls[r][c].className = 'cell cell-mine-hit';
+      setTimeout(() => showOverlay('lost'), 350);
+      return;
+    }
+
+    // BFS (from game_logic.py _flood_fill)
+    const queue: [number,number][] = [[r, c]];
+    const visited = new Set<number>([r * cols + c]);
+    const revealed: [number,number][] = [];
+
+    while (queue.length) {
+      const [rr, cc] = queue.shift()!;
+      const cl = board[rr][cc];
+      if (cl.isRevealed || cl.isFlagged) continue;
+      cl.isRevealed = true;
+      revealed.push([rr, cc]);
+
+      if (cl.adjacent === 0) {
+        for (const [nr, nc] of neighbors(rr, cc)) {
+          const k = nr * cols + nc;
+          if (!visited.has(k) && !board[nr][nc].isFlagged) {
+            visited.add(k); queue.push([nr, nc]);
+          }
+        }
+      }
+    }
+
+    // Combo scoring (from game_logic.py _update_combo)
+    const now = Date.now();
+    combo = (now - lastRevealMs <= COMBO_WINDOW_MS) ? Math.min(combo + 1, COMBO_MAX) : 1;
+    lastRevealMs = now;
+    score += Math.round(revealed.length * combo * factor * 10);
+
+    revealed.forEach(([rr, cc]) => updateCell(rr, cc));
+    updateHUD();
+
+    if (checkWin()) {
+      status = 'won';
+      if (timerRef) { clearInterval(timerRef); timerRef = null; }
+      setTimeout(() => showOverlay('won'), 200);
+    }
+  }
+
+  // ── Flag ──────────────────────────────────────────────────────────────
+  function toggleFlag(r: number, c: number) {
+    const cell = board[r][c];
+    if (cell.isRevealed || status === 'won' || status === 'lost') return;
+    cell.isFlagged = !cell.isFlagged;
+    updateCell(r, c);
+    updateHUD();
+  }
+
+  function checkWin() {
+    for (let r = 0; r < rows; r++)
+      for (let c = 0; c < cols; c++)
+        if (!board[r][c].isMine && !board[r][c].isRevealed) return false;
+    return true;
+  }
+
+  function minesLeft() {
+    let f = 0;
+    for (let r = 0; r < rows; r++)
+      for (let c = 0; c < cols; c++)
+        if (board[r][c].isFlagged) f++;
+    return mineCount - f;
+  }
+
+  // ── DOM ───────────────────────────────────────────────────────────────
+  function buildDOM() {
+    const ts = TILE_SIZES[diff];
+    boardEl.style.cssText = `display:inline-grid; grid-template-columns:repeat(${cols},${ts}px); gap:1px; background:#0d1014;`;
+    boardEl.innerHTML = '';
+    cellEls = [];
+
+    for (let r = 0; r < rows; r++) {
+      cellEls.push([]);
+      for (let c = 0; c < cols; c++) {
+        const el = document.createElement('div');
+        el.className = 'cell cell-hidden';
+        el.style.width = el.style.height = ts + 'px';
+        el.style.fontSize = Math.max(10, ts - 18) + 'px';
+        el.style.lineHeight = ts + 'px';
+
+        // Click
+        el.addEventListener('click', () => reveal(r, c));
+        // Right-click flag
+        el.addEventListener('contextmenu', (e) => { e.preventDefault(); toggleFlag(r, c); });
+
+        // Touch: long-press to flag, tap to reveal
+        let longPress: ReturnType<typeof setTimeout> | null = null;
+        let moved = false;
+        el.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          moved = false;
+          longPress = setTimeout(() => { longPress = null; toggleFlag(r, c); }, 420);
+        }, { passive: false });
+        el.addEventListener('touchmove', () => { moved = true; if (longPress) { clearTimeout(longPress); longPress = null; } });
+        el.addEventListener('touchend', (e) => {
+          e.preventDefault();
+          if (longPress) { clearTimeout(longPress); longPress = null; if (!moved) reveal(r, c); }
+        });
+
+        boardEl.appendChild(el);
+        cellEls[r].push(el);
+      }
+    }
+  }
+
+  function updateCell(r: number, c: number) {
+    const el = cellEls[r][c];
+    const cell = board[r][c];
+    el.textContent = '';
+    el.style.color = '';
+
+    if (cell.isRevealed) {
+      if (cell.isMine) {
+        el.className = 'cell cell-mine';
+        el.textContent = '💣';
+      } else {
+        el.className = 'cell cell-revealed';
+        if (cell.adjacent > 0) {
+          el.textContent = String(cell.adjacent);
+          el.style.color = NUM_COLORS[cell.adjacent];
+        }
+      }
+    } else if (cell.isFlagged) {
+      el.className = 'cell cell-flagged';
+      el.textContent = '🚩';
+    } else {
+      el.className = 'cell cell-hidden';
+    }
+  }
+
+  function renderAll() {
+    for (let r = 0; r < rows; r++)
+      for (let c = 0; c < cols; c++) updateCell(r, c);
+  }
+
+  function updateHUD() {
+    hudMines.textContent = String(minesLeft());
+    hudScore.textContent = String(score);
+    if (combo > 1) {
+      hudCombo.classList.remove('hidden');
+      hudComboVal.textContent = String(combo);
+    } else {
+      hudCombo.classList.add('hidden');
+    }
+  }
+
+  // ── Overlay ───────────────────────────────────────────────────────────
+  function showOverlay(outcome: 'won' | 'lost') {
+    ovEmoji.textContent = outcome === 'won' ? '🎉' : '💥';
+    ovTitle.textContent = outcome === 'won' ? 'You won!' : 'Game over';
+    ovTitle.style.color = outcome === 'won' ? '#00e676' : '#ff5252';
+    ovSub.textContent   = `Score: ${score} · Time: ${seconds}s · ${diff}`;
+    overlay.classList.add('show');
+  }
+  function hideOverlay() { overlay.classList.remove('show'); }
+
+  // ── Event wiring ──────────────────────────────────────────────────────
+  document.getElementById('new-game-btn')!.addEventListener('click', () => newGame(diff));
+  document.getElementById('ov-btn')!.addEventListener('click', () => newGame(diff));
+
+  document.getElementById('diff-btns')!.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest('[data-diff]') as HTMLElement | null;
+    if (!btn) return;
+    document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    newGame(btn.dataset.diff as DiffKey);
+  });
+
+  // ── Start ─────────────────────────────────────────────────────────────
+  newGame('Beginner');
+</script>

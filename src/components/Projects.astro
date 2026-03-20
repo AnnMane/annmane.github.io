@@ -13,6 +13,7 @@ const projects = [
     ],
     tech: ['Python', 'Power BI', 'BeautifulSoup', 'Pandas', 'DAX', 'Power Query'],
     github: 'https://github.com/AnnMane',
+    playUrl: null,
     accentColor: '#7c3aed',
   },
   {
@@ -27,20 +28,23 @@ const projects = [
     ],
     tech: ['Power BI', 'Power Query', 'DAX'],
     github: 'https://github.com/AnnMane',
+    playUrl: null,
     accentColor: '#06b6d4',
   },
   {
     title: 'Saper / Minesweeper',
     year: '2024',
     description:
-      'A fully functional Minesweeper game built from scratch in Python with a graphical Tkinter interface. Implements recursive flood-fill cell reveal and flag-marking mechanics.',
+      'A fully functional Minesweeper in Python + Tkinter with BFS flood-fill, combo scoring, earthquake mechanic (mines reposition mid-game), and X-Ray power-up. Rebuilt as a playable browser game.',
     highlights: [
-      'Full Minesweeper mechanics in Python',
-      'Tkinter GUI with responsive grid',
-      'Recursive flood-fill cell reveal algorithm',
+      'BFS flood-fill cascade with animation',
+      'Combo ×5 multiplier scoring system',
+      'Safe first click — 3×3 mine exclusion zone',
+      'Three difficulty levels: Beginner → Expert',
     ],
-    tech: ['Python', 'Tkinter'],
-    github: 'https://github.com/AnnMane',
+    tech: ['Python', 'Tkinter', 'JavaScript'],
+    github: 'https://github.com/AnnMane/minesweeper-python',
+    playUrl: '/minesweeper',
     accentColor: '#f59e0b',
   },
 ];
@@ -49,7 +53,6 @@ const projects = [
 <section id="projects" class="section px-4">
   <div class="max-w-6xl mx-auto">
 
-    <!-- Section header styled as PBI visual title -->
     <div class="flex items-center gap-3 mb-4">
       <div class="w-1 h-6 bg-[#7c3aed] rounded-full"></div>
       <h2 class="text-xl font-bold text-[#e6edf3] tracking-tight">Projects</h2>
@@ -59,7 +62,6 @@ const projects = [
     <div class="grid gap-4 lg:grid-cols-3">
       {projects.map((project) => (
         <article class="pbi-visual flex flex-col">
-          <!-- Visual header -->
           <div class="pbi-header" style={`border-top: 3px solid ${project.accentColor};`}>
             <span class="pbi-header-title" style={`color: ${project.accentColor}; opacity: 0.9;`}>
               {project.year}
@@ -77,7 +79,6 @@ const projects = [
             </a>
           </div>
 
-          <!-- Content -->
           <div class="px-5 py-5 flex flex-col gap-4 flex-1">
             <h3 class="text-[15px] font-semibold text-[#e6edf3] leading-snug">{project.title}</h3>
             <p class="text-[13px] text-[#8b949e] leading-relaxed">{project.description}</p>
@@ -95,6 +96,15 @@ const projects = [
               {project.tech.map(t => (
                 <span class="tech-badge">{t}</span>
               ))}
+              {project.playUrl && (
+                <a
+                  href={project.playUrl}
+                  class="ml-auto px-3 py-1 text-[11px] rounded-[3px] font-semibold transition-colors"
+                  style={`background: ${project.accentColor}20; border: 1px solid ${project.accentColor}40; color: ${project.accentColor};`}
+                >
+                  Play →
+                </a>
+              )}
             </div>
           </div>
         </article>
