@@ -1,0 +1,279 @@
+---
+// Data Pipeline — animated ETL scrollytelling
+const nodes = [
+  {
+    emoji: '🕷️',
+    title: 'Scrape',
+    subtitle: '2,400 job postings · BeautifulSoup',
+    color: '#7c3aed',
+    details: [
+      'Scraped Pracuj.pl & NoFluffJobs',
+      'BeautifulSoup + requests',
+      'Rate-limited · robots.txt respected',
+      '2,400 raw job postings collected',
+    ],
+  },
+  {
+    emoji: '🧹',
+    title: 'Clean',
+    subtitle: 'Pandas normalization · type casting',
+    color: '#8b5cf6',
+    details: [
+      'Null handling & deduplication',
+      'Salary range normalization (B2B/UoP)',
+      'Tech stack tag extraction via regex',
+      'Type casting & date parsing',
+    ],
+  },
+  {
+    emoji: '⭐',
+    title: 'Model',
+    subtitle: 'Star Schema · bridge tables',
+    color: '#06b6d4',
+    details: [
+      'Fact table: job_postings (2,400 rows)',
+      'Dim: companies, locations, tech_stack',
+      'Bridge table: posting_skills (M:N)',
+      'Composite PKs for referential integrity',
+    ],
+  },
+  {
+    emoji: '📊',
+    title: 'Visualize',
+    subtitle: 'Power BI · 3-page dashboard',
+    color: '#0ea5e9',
+    details: [
+      'Page 1: Market overview & salary bands',
+      'Page 2: Tech stack heatmap',
+      'Page 3: Location & remote trends',
+      'DAX measures · drill-through filters',
+    ],
+  },
+];
+---
+
+<section id="pipeline" class="section px-4" style="position:relative;overflow:hidden;">
+
+  <!-- Orb accent -->
+  <div class="orb orb-v" style="width:500px;height:500px;top:-100px;left:-150px;opacity:0.3;"></div>
+
+  <div class="max-w-6xl mx-auto" style="position:relative;z-index:1;">
+
+    <div class="mb-10 sr sr-up">
+      <p class="section-eyebrow">IT Job Market Analysis</p>
+      <h2 class="section-title">Data Pipeline</h2>
+      <p class="section-sub">From raw job postings to interactive dashboard — watch the data flow.</p>
+    </div>
+
+    <div class="pipeline-wrap" id="pipeline-wrap">
+      <!-- SVG connector layer -->
+      <svg class="pipeline-svg" id="pipeline-svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="pipe-gradient" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#7c3aed"/>
+            <stop offset="100%" stop-color="#06b6d4"/>
+          </linearGradient>
+        </defs>
+      </svg>
+
+      <!-- Nodes -->
+      <div class="pipeline-nodes-row" id="pipeline-nodes">
+        {nodes.map((node, i) => (
+          <div
+            class={`pipeline-node sr sr-d${i + 1}`}
+            data-idx={i}
+            style={`--node-color: ${node.color};`}
+          >
+            <div style="font-size:28px;margin-bottom:10px;">{node.emoji}</div>
+            <div style={`font-size:13px;font-weight:700;letter-spacing:0.04em;color:${node.color};margin-bottom:4px;`}>
+              {node.title}
+            </div>
+            <div style="font-size:11px;color:var(--t3);line-height:1.5;">
+              {node.subtitle}
+            </div>
+            <!-- Expanded details -->
+            <div class="pipeline-node-details">
+              <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border-2);">
+                {node.details.map(detail => (
+                  <div style="font-size:11px;color:var(--t3);padding:2px 0;display:flex;gap:6px;align-items:flex-start;">
+                    <span style={`color:${node.color};flex-shrink:0;`}>›</span>
+                    {detail}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <!-- Click hint -->
+            <div style="font-size:10px;color:var(--t4);margin-top:10px;text-align:right;">
+              click to expand
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- Step indicator -->
+      <div style="display:flex;justify-content:center;gap:8px;margin-top:20px;">
+        {nodes.map((node, i) => (
+          <div style={`width:8px;height:8px;border-radius:50%;background:${node.color};opacity:0.4;transition:opacity 0.3s;`}
+               class={`pipeline-dot pipeline-dot-${i}`}></div>
+        ))}
+      </div>
+
+    </div><!-- /pipeline-wrap -->
+
+  </div><!-- /max-w -->
+</section>
+
+<script is:inline>
+(function () {
+  var svg      = document.getElementById('pipeline-svg');
+  var wrap     = document.getElementById('pipeline-wrap');
+  var nodes    = document.querySelectorAll('.pipeline-node');
+  var dots     = document.querySelectorAll('.pipeline-dot');
+  var paths    = [];
+  var particles = [];
+  var animFrame = null;
+  var pipelineAnimated = false;
+
+  // ── Build SVG paths between nodes ─────────────────────────────────
+  function buildPaths() {
+    if (!wrap || !svg || nodes.length < 2) return;
+    // Remove old paths + particles
+    svg.querySelectorAll('path, circle').forEach(function (el) { el.remove(); });
+    paths = [];
+    particles = [];
+
+    if (window.innerWidth < 768) return; // skip on mobile
+
+    var wRect = wrap.getBoundingClientRect();
+
+    for (var i = 0; i < nodes.length - 1; i++) {
+      var r1 = nodes[i].getBoundingClientRect();
+      var r2 = nodes[i + 1].getBoundingClientRect();
+
+      // Skip if nodes are stacked vertically (responsive grid)
+      var cy1 = r1.top + r1.height / 2;
+      var cy2 = r2.top + r2.height / 2;
+      if (Math.abs(cy1 - cy2) > r1.height * 0.8) continue;
+
+      var x1 = r1.right  - wRect.left;
+      var y1 = cy1 - wRect.top;
+      var x2 = r2.left   - wRect.left;
+      var y2 = cy2 - wRect.top;
+      var cx = x1 + (x2 - x1) * 0.5;
+
+      var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', 'M ' + x1 + ',' + y1 + ' C ' + cx + ',' + y1 + ' ' + cx + ',' + y2 + ' ' + x2 + ',' + y2);
+      path.setAttribute('fill', 'none');
+      path.setAttribute('stroke', 'url(#pipe-gradient)');
+      path.setAttribute('stroke-width', '2');
+      path.setAttribute('stroke-linecap', 'round');
+      path.setAttribute('data-idx', i);
+
+      svg.appendChild(path);
+      var len = path.getTotalLength();
+      path.style.strokeDasharray = String(len);
+      path.style.strokeDashoffset = String(len);
+
+      paths.push(path);
+
+      // 4 particles per path
+      for (var j = 0; j < 4; j++) {
+        var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('r', '3');
+        circle.setAttribute('fill', j % 2 === 0 ? '#7c3aed' : '#06b6d4');
+        circle.setAttribute('opacity', '0');
+        svg.appendChild(circle);
+        particles.push({ circle: circle, path: path, len: len, offset: j / 4, speed: 0.25 + i * 0.05 });
+      }
+    }
+
+    // If animation already triggered, re-animate immediately
+    if (pipelineAnimated) animatePaths(true);
+  }
+
+  // ── Sequential path draw-in ────────────────────────────────────────
+  function animatePaths(instant) {
+    pipelineAnimated = true;
+    var delays = [200, 500, 800];
+
+    paths.forEach(function (path, i) {
+      var delay = instant ? 0 : (delays[i] || i * 300);
+      setTimeout(function () {
+        path.style.transition = 'stroke-dashoffset 1.2s cubic-bezier(0.16,1,0.3,1)';
+        path.style.strokeDashoffset = '0';
+
+        // After last path, switch to flowing + start particles
+        if (i === paths.length - 1) {
+          setTimeout(function () {
+            paths.forEach(function (p) {
+              p.classList.add('pipe-flowing');
+            });
+            particles.forEach(function (p) {
+              p.circle.setAttribute('opacity', '0.85');
+            });
+            startParticles();
+          }, 1300);
+        }
+      }, delay);
+    });
+  }
+
+  // ── Particle animation ─────────────────────────────────────────────
+  function startParticles() {
+    if (animFrame) cancelAnimationFrame(animFrame);
+    var lastTime = 0;
+
+    function animate(time) {
+      var dt = lastTime ? Math.min((time - lastTime) / 1000, 0.1) : 0;
+      lastTime = time;
+
+      for (var i = 0; i < particles.length; i++) {
+        var p = particles[i];
+        p.offset = (p.offset + p.speed * dt) % 1;
+        var pt = p.path.getPointAtLength(p.offset * p.len);
+        p.circle.setAttribute('cx', pt.x);
+        p.circle.setAttribute('cy', pt.y);
+      }
+      animFrame = requestAnimationFrame(animate);
+    }
+    animFrame = requestAnimationFrame(animate);
+  }
+
+  // ── Node click expand ──────────────────────────────────────────────
+  nodes.forEach(function (node, i) {
+    node.addEventListener('click', function () {
+      var wasExpanded = node.classList.contains('expanded');
+      nodes.forEach(function (n) { n.classList.remove('expanded'); });
+      dots.forEach(function (d) { d.style.opacity = '0.4'; });
+      if (!wasExpanded) {
+        node.classList.add('expanded');
+        if (dots[i]) dots[i].style.opacity = '1';
+      }
+      // Rebuild paths after expand transition settles
+      setTimeout(buildPaths, 420);
+    });
+  });
+
+  // ── Intersection observer ──────────────────────────────────────────
+  var section = document.getElementById('pipeline');
+  if (section) {
+    var io = new IntersectionObserver(function (entries) {
+      if (!entries[0].isIntersecting) return;
+      io.disconnect();
+      animatePaths(false);
+    }, { threshold: 0.25 });
+    io.observe(section);
+  }
+
+  // ── Init & resize ──────────────────────────────────────────────────
+  window.addEventListener('load', function () {
+    requestAnimationFrame(function () { requestAnimationFrame(buildPaths); });
+  });
+
+  var resizeTimer;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(buildPaths, 200);
+  }, { passive: true });
+})();
+</script>

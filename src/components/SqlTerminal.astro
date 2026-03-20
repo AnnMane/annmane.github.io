@@ -1,0 +1,298 @@
+---
+// SQL Terminal — "Query my portfolio" (Ctrl+K)
+---
+
+<div id="sql-overlay" class="sql-overlay" aria-modal="true" role="dialog" aria-label="SQL Terminal">
+  <div id="sql-panel" class="sql-panel pbi-visual" role="document">
+    <div class="sql-titlebar pbi-header">
+      <div style="display:flex;gap:6px;align-items:center;flex-shrink:0;">
+        <span style="width:12px;height:12px;border-radius:50%;background:#ff5f56;display:inline-block;"></span>
+        <span style="width:12px;height:12px;border-radius:50%;background:#ffbd2e;display:inline-block;"></span>
+        <span style="width:12px;height:12px;border-radius:50%;background:#27c93f;display:inline-block;"></span>
+      </div>
+      <span class="pbi-header-title" style="margin-left:4px;">anna_portfolio — SQL Terminal</span>
+      <span style="margin-left:auto;font-size:11px;color:var(--t4);white-space:nowrap;">ESC to close · ↑↓ history</span>
+    </div>
+    <div id="sql-output" class="sql-output"></div>
+    <div class="sql-input-row">
+      <span class="sql-prompt">anna_portfolio&gt;</span>
+      <input id="sql-input" class="sql-input" type="text"
+             autocomplete="off" spellcheck="false"
+             placeholder="type a SQL query…"
+             aria-label="SQL query input" />
+    </div>
+  </div>
+</div>
+
+<button id="sql-trigger" aria-label="Open SQL Terminal (Ctrl+K)"
+        title="Query my portfolio (Ctrl+K)"
+        style="position:fixed;bottom:28px;right:28px;z-index:9998;
+               display:flex;align-items:center;gap:8px;
+               padding:10px 18px;
+               background:var(--surface);
+               border:1px solid rgba(124,58,237,0.35);
+               border-radius:24px;color:var(--t2);
+               font-size:13px;font-weight:600;cursor:pointer;
+               box-shadow:0 4px 20px rgba(124,58,237,0.2);
+               transition:border-color 0.2s,box-shadow 0.2s,color 0.2s;">
+  <span style="font-size:16px;">⌨</span> Query me
+</button>
+
+<script is:inline>
+(function () {
+  var DB = {
+    me: [
+      { name: 'Anna Grzywa', role: 'Data Analyst', company: 'KPMG Intern 2026', location: 'Poland' }
+    ],
+    projects: [
+      { id: 1, name: 'IT Job Market Analysis',   year: 2026, tools: 'Python · Power BI · DAX · SQL', status: 'completed' },
+      { id: 2, name: 'Global Streaming Catalog',  year: 2025, tools: 'Power BI · Power Query · DAX',  status: 'completed' },
+      { id: 3, name: 'Minesweeper',               year: 2024, tools: 'Python · Tkinter · JavaScript', status: 'completed' },
+    ],
+    skills: [
+      { name: 'Power BI',      category: 'Visualization',  level: 90, projects: 'IT Job Market · Streaming' },
+      { name: 'Python',        category: 'Language',        level: 75, projects: 'IT Job Market · Minesweeper' },
+      { name: 'SQL',           category: 'Language',        level: 80, projects: 'IT Job Market' },
+      { name: 'Excel',         category: 'Visualization',  level: 85, projects: 'IT Job Market · Streaming' },
+      { name: 'DAX',           category: 'Language',        level: 80, projects: 'IT Job Market · Streaming' },
+      { name: 'Data Modeling', category: 'Architecture',    level: 75, projects: 'IT Job Market · Streaming' },
+      { name: 'Pandas',        category: 'Python',          level: 80, projects: 'IT Job Market' },
+      { name: 'Git',           category: 'Tools',           level: 70, projects: 'All projects' },
+    ],
+    blog: [
+      { id: 1, title: 'SQL Window Functions',          date: '2026-03-10', tags: 'SQL' },
+      { id: 2, title: 'DAX Context Transition',        date: '2026-03-05', tags: 'DAX · Power BI' },
+      { id: 3, title: 'Power BI Star Schema',          date: '2026-02-20', tags: 'Power BI · Data Modeling' },
+      { id: 4, title: 'Python Pandas GroupBy Trap',    date: '2026-02-10', tags: 'Python · Pandas' },
+      { id: 5, title: 'SQL CTE vs Subquery',           date: '2026-01-28', tags: 'SQL' },
+      { id: 6, title: 'BeautifulSoup Scraping Guide',  date: '2026-01-15', tags: 'Python' },
+    ],
+    welcome: [
+      { tip: 'Try: SHOW TABLES; or SELECT * FROM projects;', version: '1.0.0' }
+    ],
+  };
+
+  var TABLES = Object.keys(DB);
+  var KW = ['SELECT','FROM','WHERE','ORDER','BY','LIMIT','SHOW','TABLES','DESC','ASC','AND','OR','AS'];
+
+  var overlay = document.getElementById('sql-overlay');
+  var panel   = document.getElementById('sql-panel');
+  var output  = document.getElementById('sql-output');
+  var inputEl = document.getElementById('sql-input');
+  var trigger = document.getElementById('sql-trigger');
+
+  var history = [], histIdx = -1;
+  var twQueue = [], isTw = false;
+
+  // ── Open / Close ───────────────────────────────────────────────────
+  function open() {
+    overlay.classList.add('open');
+    inputEl.focus();
+    if (!output.children.length) printWelcome();
+  }
+  function close() { overlay.classList.remove('open'); }
+
+  trigger.addEventListener('click', open);
+  overlay.addEventListener('click', function (e) { if (e.target === overlay) close(); });
+  panel.addEventListener('click', function (e) { e.stopPropagation(); });
+  document.addEventListener('keydown', function (e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); open(); }
+    if (e.key === 'Escape' && overlay.classList.contains('open')) close();
+  });
+
+  // ── Helpers ────────────────────────────────────────────────────────
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+  function pad(s, w) {
+    s = String(s === undefined || s === null ? '' : s);
+    return s + ' '.repeat(Math.max(0, w - s.length));
+  }
+  function highlight(raw) {
+    return raw.split(/(\s+|[;,=]|'[^']*')/).map(function (tok) {
+      if (!tok) return '';
+      var up = tok.trim().toUpperCase();
+      if (KW.indexOf(up) >= 0) return '<span class="sql-kw">' + esc(tok) + '</span>';
+      if (tok[0] === "'" && tok[tok.length - 1] === "'") return '<span class="sql-val">' + esc(tok) + '</span>';
+      if (/^\d+$/.test(tok.trim()) && tok.trim()) return '<span class="sql-val">' + esc(tok) + '</span>';
+      return esc(tok);
+    }).join('');
+  }
+
+  // ── Output ─────────────────────────────────────────────────────────
+  function addLine(html, cls) {
+    var div = document.createElement('div');
+    if (cls) div.className = cls;
+    div.innerHTML = html;
+    output.appendChild(div);
+    output.scrollTop = output.scrollHeight;
+  }
+
+  function enqueue(lines) {
+    for (var i = 0; i < lines.length; i++) twQueue.push(lines[i]);
+    if (!isTw) flush();
+  }
+  function flush() {
+    if (!twQueue.length) { isTw = false; return; }
+    isTw = true;
+    addLine(twQueue.shift(), 'sql-table-line');
+    setTimeout(flush, 18);
+  }
+
+  function printWelcome() {
+    enqueue([
+      '<span class="sql-ok">┌──────────────────────────────────────────────────────┐</span>',
+      '<span class="sql-ok">│</span>  Anna Grzywa — Interactive Portfolio Database          <span class="sql-ok">│</span>',
+      '<span class="sql-ok">│</span>  <span class="sql-comment">-- Query my portfolio like a real analyst would :)</span>   <span class="sql-ok">│</span>',
+      '<span class="sql-ok">└──────────────────────────────────────────────────────┘</span>',
+      '',
+      '<span class="sql-comment">-- Quick start:</span>',
+      '<span class="sql-kw">SHOW TABLES</span>;',
+      '<span class="sql-kw">SELECT</span> * <span class="sql-kw">FROM</span> projects;',
+      '<span class="sql-kw">SELECT</span> * <span class="sql-kw">FROM</span> skills <span class="sql-kw">WHERE</span> category = <span class="sql-val">\'Python\'</span>;',
+      '<span class="sql-kw">SELECT</span> * <span class="sql-kw">FROM</span> blog <span class="sql-kw">ORDER BY</span> date <span class="sql-kw">DESC LIMIT</span> 3;',
+      '<span class="sql-kw">SELECT</span> name, role <span class="sql-kw">FROM</span> me;',
+      '',
+    ]);
+  }
+
+  // ── ASCII table renderer ────────────────────────────────────────────
+  function renderTable(rows) {
+    if (!rows.length) return ['<span class="sql-comment">-- 0 rows returned</span>'];
+    var keys = Object.keys(rows[0]);
+    var widths = keys.map(function (k) {
+      var maxVal = 0;
+      for (var i = 0; i < rows.length; i++) {
+        var len = String(rows[i][k] === undefined ? '' : rows[i][k]).length;
+        if (len > maxVal) maxVal = len;
+      }
+      return Math.max(k.length, maxVal);
+    });
+
+    function sep(l, m, r) {
+      return l + widths.map(function (w) { return '─'.repeat(w + 2); }).join(m) + r;
+    }
+    var top = sep('┌', '┬', '┐');
+    var mid = sep('├', '┼', '┤');
+    var bot = sep('└', '┴', '┘');
+    var hdr = '│' + keys.map(function (k, i) {
+      return ' <span class="sql-val">' + esc(pad(k, widths[i])) + '</span> ';
+    }).join('│') + '│';
+
+    var dataRows = rows.map(function (r) {
+      return '<span style="color:var(--t2)">│' + keys.map(function (k, i) {
+        return ' ' + esc(pad(r[k], widths[i])) + ' ';
+      }).join('│') + '│</span>';
+    });
+
+    return [
+      '<span class="sql-ok">' + esc(top) + '</span>',
+      hdr,
+      '<span class="sql-ok">' + esc(mid) + '</span>',
+    ].concat(dataRows).concat([
+      '<span class="sql-ok">' + esc(bot) + '</span>',
+      '<span class="sql-comment">-- ' + rows.length + ' row' + (rows.length !== 1 ? 's' : '') + ' in set</span>',
+    ]);
+  }
+
+  // ── SQL Parser ─────────────────────────────────────────────────────
+  function findKey(obj, col) {
+    var keys = Object.keys(obj);
+    for (var i = 0; i < keys.length; i++) {
+      if (keys[i].toLowerCase() === col) return keys[i];
+    }
+    return null;
+  }
+
+  function parseAndRun(raw) {
+    var q = raw.trim().replace(/;$/, '').trim();
+    var up = q.toUpperCase().replace(/\s+/g, ' ');
+
+    if (up === 'SHOW TABLES') {
+      return renderTable(TABLES.map(function (t) { return { 'Tables_in_portfolio': t }; }));
+    }
+    if (up.indexOf('SELECT') === 0) return runSelect(q, up);
+    return ['<span class="sql-err">ERROR: Unknown command. Try SHOW TABLES; or SELECT * FROM table;</span>'];
+  }
+
+  function runSelect(q, up) {
+    var fromM = up.match(/\bFROM\s+(\w+)/);
+    if (!fromM) return ['<span class="sql-err">ERROR: Missing FROM clause.</span>'];
+    var tbl = fromM[1].toLowerCase();
+    if (!DB[tbl]) return ['<span class="sql-err">ERROR: Table \'' + esc(tbl) + '\' not found. Try SHOW TABLES;</span>'];
+
+    var rows = DB[tbl].map(function (r) { return Object.assign({}, r); });
+
+    // WHERE col = 'val'
+    var whereM = q.match(/\bWHERE\s+(\w+)\s*=\s*'([^']*)'/i);
+    if (whereM) {
+      var col = whereM[1].toLowerCase();
+      var val = whereM[2].toLowerCase();
+      rows = rows.filter(function (r) {
+        var key = findKey(r, col);
+        return key && String(r[key]).toLowerCase() === val;
+      });
+    }
+
+    // ORDER BY col [ASC|DESC]
+    var orderM = up.match(/\bORDER\s+BY\s+(\w+)(?:\s+(ASC|DESC))?/);
+    if (orderM) {
+      var ocol = orderM[1].toLowerCase();
+      var dir = orderM[2] === 'DESC' ? -1 : 1;
+      rows = rows.slice().sort(function (a, b) {
+        var ka = findKey(a, ocol), kb = findKey(b, ocol);
+        var av = ka ? a[ka] : '', bv = kb ? b[kb] : '';
+        return av < bv ? -dir : av > bv ? dir : 0;
+      });
+    }
+
+    // LIMIT n
+    var limM = up.match(/\bLIMIT\s+(\d+)/);
+    if (limM) rows = rows.slice(0, parseInt(limM[1]));
+
+    // Column selection
+    var selM = q.match(/^SELECT\s+([\s\S]+?)\s+FROM/i);
+    if (selM) {
+      var selStr = selM[1].trim();
+      if (selStr !== '*') {
+        var cols = selStr.split(',').map(function (c) { return c.trim().toLowerCase(); });
+        rows = rows.map(function (r) {
+          var filtered = {};
+          cols.forEach(function (c) {
+            var key = findKey(r, c);
+            if (key) filtered[key] = r[key];
+          });
+          return filtered;
+        });
+      }
+    }
+
+    if (!rows.length) return ['<span class="sql-comment">-- 0 rows returned</span>'];
+    return renderTable(rows);
+  }
+
+  // ── Input ──────────────────────────────────────────────────────────
+  inputEl.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+      var val = inputEl.value.trim();
+      if (!val) return;
+      addLine('<span class="sql-prompt">anna_portfolio&gt;</span> ' + highlight(val), 'sql-table-line');
+      history.unshift(val);
+      if (history.length > 50) history.pop();
+      histIdx = -1;
+      inputEl.value = '';
+      enqueue(parseAndRun(val));
+      enqueue(['']);
+    }
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (histIdx < history.length - 1) { histIdx++; inputEl.value = history[histIdx] || ''; }
+    }
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (histIdx > 0) { histIdx--; inputEl.value = history[histIdx] || ''; }
+      else { histIdx = -1; inputEl.value = ''; }
+    }
+  });
+})();
+</script>

@@ -36,6 +36,58 @@ const groups = [
     ],
   },
 ];
+
+// Radar data — center (250,250), R=180, 6 skills at 60° intervals from -90°
+const radarSkills = [
+  { name: 'Power BI',      pct: 90, val: 0.90, projects: 'IT Job Market · Streaming Catalog' },
+  { name: 'Python',        pct: 75, val: 0.75, projects: 'IT Job Market · Minesweeper'       },
+  { name: 'SQL',           pct: 80, val: 0.80, projects: 'IT Job Market'                     },
+  { name: 'Excel',         pct: 85, val: 0.85, projects: 'IT Job Market · Streaming Catalog' },
+  { name: 'DAX',           pct: 80, val: 0.80, projects: 'IT Job Market · Streaming Catalog' },
+  { name: 'Data Modeling', pct: 75, val: 0.75, projects: 'IT Job Market · Streaming Catalog' },
+];
+// Outer hex corners (R=180, p=1.0)
+// i=0 top, going clockwise
+const R = 180, cx = 250, cy = 250;
+function hexPt(i: number, scale: number = 1) {
+  const angle = -Math.PI / 2 + i * (Math.PI / 3);
+  return {
+    x: +(cx + R * scale * Math.cos(angle)).toFixed(1),
+    y: +(cy + R * scale * Math.sin(angle)).toFixed(1),
+  };
+}
+function hexPath(scale: number) {
+  return Array.from({ length: 6 }, (_, i) => hexPt(i, scale))
+    .map((p, i) => (i === 0 ? `M ${p.x},${p.y}` : `L ${p.x},${p.y}`))
+    .join(' ') + ' Z';
+}
+// Radar fill path (skill polygon)
+const fillPath = radarSkills
+  .map((s, i) => {
+    const angle = -Math.PI / 2 + i * (Math.PI / 3);
+    const x = +(cx + R * s.val * Math.cos(angle)).toFixed(1);
+    const y = +(cy + R * s.val * Math.sin(angle)).toFixed(1);
+    return i === 0 ? `M ${x},${y}` : `L ${x},${y}`;
+  })
+  .join(' ') + ' Z';
+// Skill point positions
+const skillPoints = radarSkills.map((s, i) => {
+  const angle = -Math.PI / 2 + i * (Math.PI / 3);
+  return {
+    x: +(cx + R * s.val * Math.cos(angle)).toFixed(1),
+    y: +(cy + R * s.val * Math.sin(angle)).toFixed(1),
+  };
+});
+// Label positions (R * 1.18)
+const labelPts = radarSkills.map((_, i) => {
+  const angle = -Math.PI / 2 + i * (Math.PI / 3);
+  return {
+    x: +(cx + R * 1.18 * Math.cos(angle)).toFixed(1),
+    y: +(cy + R * 1.18 * Math.sin(angle)).toFixed(1),
+  };
+});
+// Axis lines
+const axes = Array.from({ length: 6 }, (_, i) => hexPt(i, 1.0));
 ---
 
 <section id="skills" class="section px-4" style="position: relative; overflow: hidden;">
@@ -51,6 +103,122 @@ const groups = [
       <p class="section-sub">Tools and technologies I use to turn data into insight.</p>
     </div>
 
+    <!-- ── Radar Chart ────────────────────────────────────────── -->
+    <div class="radar-wrap sr sr-up" id="radar-container">
+      <div style="position:relative;width:100%;max-width:480px;">
+        <svg
+          id="radar-svg"
+          viewBox="0 0 500 500"
+          style="width:100%;overflow:visible;"
+          role="img"
+          aria-label="Skill radar chart"
+        >
+          <defs>
+            <linearGradient id="radar-fill-grad" x1="250" y1="70" x2="250" y2="430" gradientUnits="userSpaceOnUse">
+              <stop offset="0%"   stop-color="#7c3aed" stop-opacity="0.45"/>
+              <stop offset="100%" stop-color="#06b6d4" stop-opacity="0.28"/>
+            </linearGradient>
+            <linearGradient id="radar-stroke-grad" x1="250" y1="70" x2="250" y2="430" gradientUnits="userSpaceOnUse">
+              <stop offset="0%"   stop-color="#7c3aed"/>
+              <stop offset="100%" stop-color="#06b6d4"/>
+            </linearGradient>
+          </defs>
+
+          <!-- Grid hexagons -->
+          {[0.2, 0.4, 0.6, 0.8, 1.0].map(p => (
+            <path
+              d={hexPath(p)}
+              fill="none"
+              stroke="var(--border)"
+              stroke-width={p === 1.0 ? '1.5' : '1'}
+              opacity={p === 1.0 ? '0.6' : '0.35'}
+            />
+          ))}
+
+          <!-- Axis lines -->
+          {axes.map(pt => (
+            <line
+              x1={cx} y1={cy} x2={pt.x} y2={pt.y}
+              stroke="var(--border)" stroke-width="1" opacity="0.35"
+            />
+          ))}
+
+          <!-- Skill fill polygon -->
+          <path
+            id="radar-fill"
+            d={fillPath}
+            fill="url(#radar-fill-grad)"
+            stroke="none"
+            opacity="0"
+          />
+
+          <!-- Skill stroke path (animates draw-in) -->
+          <path
+            id="radar-stroke"
+            d={fillPath}
+            fill="none"
+            stroke="url(#radar-stroke-grad)"
+            stroke-width="2.5"
+            stroke-linejoin="round"
+          />
+
+          <!-- Skill point circles (hover targets) -->
+          {skillPoints.map((pt, i) => (
+            <circle
+              class="radar-point"
+              cx={pt.x} cy={pt.y} r="6"
+              fill="url(#radar-stroke-grad)"
+              stroke="var(--bg)" stroke-width="2"
+              style="cursor:pointer;"
+              data-name={radarSkills[i].name}
+              data-pct={radarSkills[i].pct}
+              data-projects={radarSkills[i].projects}
+            />
+          ))}
+
+          <!-- Labels -->
+          {labelPts.map((pt, i) => {
+            const anchor =
+              i === 0 || i === 3 ? 'middle' :
+              i === 1 || i === 2 ? 'start' : 'end';
+            const dy = i === 0 ? '-4' : i === 3 ? '14' : '4';
+            return (
+              <text
+                x={pt.x} y={pt.y}
+                text-anchor={anchor}
+                dy={dy}
+                font-size="13"
+                font-weight="600"
+                fill="var(--t2)"
+                font-family="-apple-system, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif"
+              >
+                {radarSkills[i].name}
+              </text>
+            );
+          })}
+
+          <!-- Pct labels near points -->
+          {skillPoints.map((pt, i) => (
+            <text
+              x={pt.x} y={pt.y - 12}
+              text-anchor="middle"
+              font-size="10"
+              font-weight="500"
+              fill="var(--accent-c)"
+              font-family="monospace"
+              opacity="0.8"
+            >
+              {radarSkills[i].pct}%
+            </text>
+          ))}
+        </svg>
+      </div>
+    </div>
+
+    <!-- Tooltip (shared, positioned via JS) -->
+    <div id="radar-tooltip" class="radar-tooltip"></div>
+
+    <!-- ── Skill Cards ────────────────────────────────────────── -->
     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       {groups.map((group, i) => (
         <div class={`pbi-visual tilt sr sr-d${i + 1}`}>
@@ -76,3 +244,68 @@ const groups = [
 
   </div><!-- /max-w -->
 </section>
+
+<script is:inline>
+(function () {
+  var strokePath = document.getElementById('radar-stroke');
+  var fillPath   = document.getElementById('radar-fill');
+  var tooltip    = document.getElementById('radar-tooltip');
+  var points     = document.querySelectorAll('.radar-point');
+  var animated   = false;
+
+  if (!strokePath) return;
+
+  // Set up stroke-dashoffset for draw-in animation
+  var len = strokePath.getTotalLength();
+  strokePath.style.strokeDasharray  = String(len);
+  strokePath.style.strokeDashoffset = String(len);
+  strokePath.style.transition = 'none';
+
+  function animateRadar() {
+    if (animated) return;
+    animated = true;
+    // Draw outline (1.4s spring)
+    strokePath.style.transition = 'stroke-dashoffset 1.4s cubic-bezier(0.16,1,0.3,1)';
+    strokePath.style.strokeDashoffset = '0';
+    // Fade fill (1.8s, delayed 0.3s)
+    fillPath.style.transition = 'opacity 1.8s ease 0.3s';
+    fillPath.style.opacity = '1';
+  }
+
+  // IntersectionObserver on the radar container
+  var container = document.getElementById('radar-container');
+  if (container) {
+    var io = new IntersectionObserver(function (entries) {
+      if (entries[0].isIntersecting) { animateRadar(); io.disconnect(); }
+    }, { threshold: 0.3 });
+    io.observe(container);
+  }
+
+  // Hover tooltip on skill points
+  points.forEach(function (pt) {
+    pt.addEventListener('mouseenter', function (e) {
+      var name     = pt.getAttribute('data-name');
+      var pct      = pt.getAttribute('data-pct');
+      var projects = pt.getAttribute('data-projects');
+      tooltip.innerHTML =
+        '<strong style="color:var(--accent-v)">' + name + '</strong> — ' + pct + '%' +
+        '<br><span style="color:var(--t3);font-size:11px;">Projects: ' + projects + '</span>';
+      tooltip.style.opacity = '1';
+      moveTooltip(e);
+    });
+    pt.addEventListener('mousemove', moveTooltip);
+    pt.addEventListener('mouseleave', function () {
+      tooltip.style.opacity = '0';
+    });
+  });
+
+  function moveTooltip(e) {
+    var x = e.clientX + 14;
+    var y = e.clientY - 10;
+    // Prevent overflow right
+    if (x + 180 > window.innerWidth) x = e.clientX - 190;
+    tooltip.style.left = x + 'px';
+    tooltip.style.top  = y + 'px';
+  }
+})();
+</script>
