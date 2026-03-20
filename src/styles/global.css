@@ -505,46 +505,142 @@ body {
 }
 
 /* ══════════════════════════════════════════════════════
-   DATA PIPELINE
+   DATA PIPELINE — SPECTACULAR
    ══════════════════════════════════════════════════════ */
-.pipeline-wrap {
-  position: relative;
+@keyframes spin-conic {
+  to { transform: rotate(360deg); }
 }
+@keyframes pulse-ring {
+  0%   { transform: scale(1);   opacity: 0.75; }
+  100% { transform: scale(2.8); opacity: 0;    }
+}
+@keyframes pipe-scan {
+  from { top: 0%;   opacity: 1; }
+  to   { top: 100%; opacity: 0; }
+}
+@keyframes node-materialize {
+  0%   { opacity: 0; transform: scale(0.8) translateY(22px); filter: blur(10px); }
+  60%  { filter: blur(0); }
+  100% { opacity: 1; transform: none; filter: blur(0); }
+}
+@keyframes flow-dash { to { stroke-dashoffset: -20; } }
+
+.pipeline-wrap { position: relative; }
 .pipeline-nodes-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+  gap: 16px;
   position: relative;
   z-index: 2;
 }
-@media (max-width: 900px)  { .pipeline-nodes-row { grid-template-columns: 1fr 1fr; } }
-@media (max-width: 500px)  { .pipeline-nodes-row { grid-template-columns: 1fr; } }
-.pipeline-node {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 20px;
-  cursor: pointer;
-  transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s;
+@media (max-width: 900px) { .pipeline-nodes-row { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 500px) { .pipeline-nodes-row { grid-template-columns: 1fr; } }
+
+/* ── Spinning-border card ───────────────────────────── */
+.pipe-node {
   position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  opacity: 0;
   user-select: none;
+  transition: transform 0.22s cubic-bezier(0.16,1,0.3,1),
+              box-shadow 0.22s;
 }
-.pipeline-node:hover {
-  border-color: rgba(124,58,237,0.45);
-  box-shadow: 0 8px 32px rgba(124,58,237,0.12);
-  transform: translateY(-2px);
+.pipe-node:hover  { transform: translateY(-4px); box-shadow: 0 20px 56px rgba(124,58,237,0.2); }
+.pipe-node.expanded { transform: none !important; }
+/* Spinning conic gradient = animated border */
+.pipe-node::before {
+  content: '';
+  position: absolute;
+  top: -40%; left: -40%;
+  width: 180%; height: 180%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    var(--nc, #7c3aed) 30deg,
+    #06b6d4 80deg,
+    transparent 130deg
+  );
+  animation: spin-conic 3.5s linear infinite;
+  z-index: 0;
+  opacity: 0.45;
+  transition: opacity 0.35s;
 }
-.pipeline-node.expanded {
-  border-color: rgba(6,182,212,0.55);
-  box-shadow: 0 8px 40px rgba(6,182,212,0.15);
-  transform: none;
+.pipe-node:hover::before,
+.pipe-node.expanded::before { opacity: 1; }
+/* Inner card (masks gradient center) */
+.pipe-node-inner {
+  position: relative;
+  z-index: 1;
+  background: var(--surface);
+  border-radius: 12px;
+  margin: 1.5px;
+  padding: 22px 18px 18px;
 }
-.pipeline-node-details {
+/* ── Icon with double pulse rings ───────────────────── */
+.pipe-icon-wrap {
+  position: relative;
+  width: 52px; height: 52px;
+  margin-bottom: 14px;
+}
+.pipe-icon-face {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  background: linear-gradient(135deg,
+    rgba(124,58,237,0.14),
+    rgba(6,182,212,0.09));
+  border: 1px solid rgba(124,58,237,0.22);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  z-index: 2;
+}
+.pipe-ring {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  border: 1.5px solid var(--nc, #7c3aed);
+  animation: pulse-ring 2.6s ease-out infinite;
+  opacity: 0;
+  z-index: 1;
+}
+.pipe-ring:nth-child(3) { animation-delay: 1.3s; }
+/* ── Progress bar ───────────────────────────────────── */
+.pipe-progress-track {
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  margin-top: 14px;
+  overflow: hidden;
+}
+.pipe-progress-bar {
+  height: 100%;
+  width: 0;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--nc, #7c3aed), #06b6d4);
+  box-shadow: 0 0 8px var(--nc, #7c3aed);
+  transition: width 1.6s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 1.6s;
+}
+/* ── Stat counter ───────────────────────────────────── */
+.pipe-stat {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, var(--nc, #7c3aed), #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+  margin: 10px 0 2px;
+}
+/* ── Expandable details ─────────────────────────────── */
+.pipe-details {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: max-height 0.42s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.pipeline-node.expanded .pipeline-node-details { max-height: 200px; }
+.pipe-node.expanded .pipe-details { max-height: 240px; }
+/* ── SVG connector layer ────────────────────────────── */
 .pipeline-svg {
   position: absolute;
   top: 0; left: 0;
@@ -553,8 +649,29 @@ body {
   overflow: visible;
   z-index: 1;
 }
-@keyframes flow-dash { to { stroke-dashoffset: -20; } }
 .pipe-flowing {
   stroke-dasharray: 6 4 !important;
-  animation: flow-dash 0.6s linear infinite;
+  animation: flow-dash 0.45s linear infinite;
 }
+/* ── Scanner sweep ──────────────────────────────────── */
+.pipe-scanner {
+  position: absolute;
+  left: -20px; right: -20px;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent, #7c3aed 25%, #06b6d4 75%, transparent);
+  box-shadow: 0 0 16px #7c3aed, 0 0 40px rgba(6,182,212,0.45);
+  top: 0;
+  pointer-events: none;
+  z-index: 20;
+  opacity: 0;
+}
+.pipe-scanner.go { animation: pipe-scan 1.8s ease-in-out forwards; }
+/* ── Materialization entrance ───────────────────────── */
+.pipe-node.materialized {
+  opacity: 1;
+  animation: node-materialize 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.pipe-node.materialized:nth-child(2) { animation-delay: 0.13s; }
+.pipe-node.materialized:nth-child(3) { animation-delay: 0.26s; }
+.pipe-node.materialized:nth-child(4) { animation-delay: 0.39s; }
