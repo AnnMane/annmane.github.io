@@ -14,11 +14,17 @@ const bars = [
 ];
 ---
 
-<section class="min-h-screen pt-20 pb-10 px-4">
-  <div class="max-w-6xl mx-auto flex flex-col gap-3">
+<section class="min-h-screen pt-20 pb-10 px-4" style="position: relative; overflow: hidden;">
+
+  <!-- Floating orbs -->
+  <div class="orb orb-v" style="width:600px; height:600px; top:-180px; right:-120px; opacity:0.7;"></div>
+  <div class="orb orb-c" style="width:500px; height:500px; bottom:-80px; left:-100px; opacity:0.6;"></div>
+  <div class="orb orb-m" style="width:350px; height:350px; top:40%; left:35%; opacity:0.4;"></div>
+
+  <div class="max-w-6xl mx-auto flex flex-col gap-3" style="position: relative; z-index: 1;">
 
     <!-- Report header -->
-    <div class="pbi-report-header">
+    <div class="pbi-report-header sr sr-up">
       <div class="flex items-center gap-2">
         <svg width="14" height="14" viewBox="0 0 12 12" fill="#7c3aed" class="shrink-0">
           <rect x="0" y="5" width="3" height="7" rx="0.5"/>
@@ -40,8 +46,8 @@ const bars = [
 
     <!-- KPI row -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-      {kpis.map(kpi => (
-        <div class="pbi-visual">
+      {kpis.map((kpi, i) => (
+        <div class={`pbi-visual tilt sr sr-up sr-d${i + 1}`}>
           <div class="pbi-header">
             <span class="pbi-header-title">{kpi.label}</span>
             <span class="pbi-header-dots">···</span>
@@ -58,14 +64,14 @@ const bars = [
     <div class="grid gap-3 lg:grid-cols-3">
 
       <!-- Profile -->
-      <div class="pbi-visual lg:col-span-2">
+      <div class="pbi-visual tilt sr sr-d2 lg:col-span-2">
         <div class="pbi-header">
           <span class="pbi-header-title">Profile</span>
           <span class="pbi-header-dots">···</span>
         </div>
         <div class="px-6 py-7 flex flex-col gap-5">
           <div>
-            <h1 class="text-4xl sm:text-5xl font-bold gradient-text mb-3">Anna Grzywa</h1>
+            <h1 class="gradient-text mb-3" style="font-size: clamp(2.2rem, 5vw, 3.8rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1;">Anna Grzywa</h1>
             <div class="flex items-center h-7">
               <span id="typing-subtitle" class="text-base font-mono" style="color: var(--t3);"></span>
               <span class="typing-cursor"></span>
@@ -106,7 +112,7 @@ const bars = [
       </div>
 
       <!-- Tech stack bar chart -->
-      <div class="pbi-visual">
+      <div class="pbi-visual tilt sr sr-d3">
         <div class="pbi-header">
           <span class="pbi-header-title">Tech Stack</span>
           <span class="pbi-header-dots">···</span>
@@ -128,7 +134,7 @@ const bars = [
       </div>
 
     </div>
-  </div>
+  </div><!-- /max-w -->
 </section>
 
 <script>

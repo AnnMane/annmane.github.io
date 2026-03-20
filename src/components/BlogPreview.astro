@@ -6,24 +6,30 @@ const posts = (await getCollection('blog'))
   .slice(0, 3);
 ---
 
-<section id="blog" class="section px-4">
-  <div class="max-w-6xl mx-auto">
+<section id="blog" class="section px-4" style="position: relative; overflow: hidden;">
 
-    <div class="flex items-center gap-3 mb-4">
-      <div class="w-1 h-6 rounded-full" style="background: #a855f7;"></div>
-      <h2 class="text-xl font-bold tracking-tight" style="color: var(--t1);">Blog</h2>
-      <span class="text-[11px] uppercase tracking-widest" style="color: var(--t3);">· notes & learning</span>
-      <a href="/blog" class="ml-auto text-[12px] text-[#7c3aed] hover:text-[#a78bfa] transition-colors">
-        All posts →
-      </a>
+  <!-- Orb accent -->
+  <div class="orb orb-m" style="width:400px; height:400px; bottom:-60px; left:30%; opacity:0.5;"></div>
+
+  <div class="max-w-6xl mx-auto" style="position: relative; z-index: 1;">
+
+    <div class="mb-10 sr sr-up flex flex-col gap-1">
+      <p class="section-eyebrow">Notes & Learning</p>
+      <div class="flex items-end justify-between gap-4">
+        <h2 class="section-title">Blog</h2>
+        <a href="/blog" class="text-[13px] font-medium shrink-0 mb-1" style="color: var(--accent-v);">
+          All posts →
+        </a>
+      </div>
+      <p class="section-sub">Real problems, real fixes — documented as I learn.</p>
     </div>
 
     {posts.length === 0 ? (
       <div class="pbi-visual px-5 py-8 text-sm" style="color: var(--t3);">No posts yet — stay tuned!</div>
     ) : (
       <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {posts.map(post => (
-          <a href={`/blog/${post.id.replace(/\.md$/, '')}`} class="pbi-visual block group">
+        {posts.map((post, i) => (
+          <a href={`/blog/${post.id.replace(/\.md$/, '')}`} class={`pbi-visual tilt block group sr sr-d${i + 1}`}>
             <div class="pbi-header" style="border-top: 3px solid #a855f7;">
               <time class="text-[11px]" style="color: var(--t3);">
                 {post.data.date.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' })}
@@ -50,5 +56,5 @@ const posts = (await getCollection('blog'))
       </div>
     )}
 
-  </div>
+  </div><!-- /max-w -->
 </section>

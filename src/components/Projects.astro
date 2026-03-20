@@ -50,18 +50,22 @@ const projects = [
 ];
 ---
 
-<section id="projects" class="section px-4">
-  <div class="max-w-6xl mx-auto">
+<section id="projects" class="section px-4" style="position: relative; overflow: hidden;">
 
-    <div class="flex items-center gap-3 mb-4">
-      <div class="w-1 h-6 rounded-full" style="background: #7c3aed;"></div>
-      <h2 class="text-xl font-bold tracking-tight" style="color: var(--t1);">Projects</h2>
-      <span class="text-[11px] uppercase tracking-widest" style="color: var(--t3);">· {projects.length} records</span>
+  <!-- Orb accent -->
+  <div class="orb orb-v" style="width:500px; height:500px; top:-100px; left:-150px; opacity:0.5;"></div>
+
+  <div class="max-w-6xl mx-auto" style="position: relative; z-index: 1;">
+
+    <div class="mb-10 sr sr-up">
+      <p class="section-eyebrow">Featured Work</p>
+      <h2 class="section-title">Projects</h2>
+      <p class="section-sub">End-to-end data projects — from raw scraping to polished dashboards.</p>
     </div>
 
     <div class="grid gap-4 lg:grid-cols-3">
-      {projects.map((project) => (
-        <article class="pbi-visual flex flex-col">
+      {projects.map((project, i) => (
+        <article class={`pbi-visual tilt flex flex-col sr sr-d${i + 1}`}>
           <div class="pbi-header" style={`border-top: 3px solid ${project.accentColor};`}>
             <span class="pbi-header-title" style={`color: ${project.accentColor}; opacity:0.9;`}>
               {project.year}
@@ -104,5 +108,5 @@ const projects = [
       ))}
     </div>
 
-  </div>
+  </div><!-- /max-w -->
 </section>

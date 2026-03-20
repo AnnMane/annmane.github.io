@@ -36,6 +36,55 @@ const {
     <Navbar />
     <slot />
 
+    <!-- Apple wow effect: scroll-reveal + 3D tilt -->
+    <script is:inline>
+      // ── Scroll reveal ──────────────────────────────────────────
+      (function () {
+        const items = document.querySelectorAll('.sr, .sr-up, .sr-scale');
+        if (!items.length) return;
+        const io = new IntersectionObserver((entries) => {
+          entries.forEach(e => {
+            if (e.isIntersecting) {
+              e.target.classList.add('in');
+              io.unobserve(e.target);
+            }
+          });
+        }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+        items.forEach(el => io.observe(el));
+      })();
+
+      // ── 3-D card tilt ──────────────────────────────────────────
+      (function () {
+        const cards = document.querySelectorAll('.tilt');
+        const MAX = 8; // degrees
+        cards.forEach(card => {
+          card.addEventListener('mousemove', (e) => {
+            const r = card.getBoundingClientRect();
+            const x = (e.clientX - r.left) / r.width  - 0.5;
+            const y = (e.clientY - r.top)  / r.height - 0.5;
+            card.style.transform =
+              `perspective(1000px) rotateX(${-y * MAX}deg) rotateY(${x * MAX}deg) scale(1.02)`;
+          });
+          card.addEventListener('mouseleave', () => {
+            card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
+          });
+        });
+      })();
+
+      // ── Navbar shrink on scroll ─────────────────────────────────
+      (function () {
+        const nav = document.querySelector('nav');
+        if (!nav) return;
+        window.addEventListener('scroll', () => {
+          if (window.scrollY > 40) {
+            nav.style.boxShadow = '0 1px 0 rgba(255,255,255,0.04), var(--shadow-sm)';
+          } else {
+            nav.style.boxShadow = '';
+          }
+        }, { passive: true });
+      })();
+    </script>
+
     <!-- Power BI page-tabs footer -->
     <footer class="mt-16 border-t" style="border-color: var(--border);">
       <div class="pbi-page-tabs">

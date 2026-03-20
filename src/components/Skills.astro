@@ -38,18 +38,22 @@ const groups = [
 ];
 ---
 
-<section id="skills" class="section px-4">
-  <div class="max-w-6xl mx-auto">
+<section id="skills" class="section px-4" style="position: relative; overflow: hidden;">
 
-    <div class="flex items-center gap-3 mb-4">
-      <div class="w-1 h-6 rounded-full" style="background: #06b6d4;"></div>
-      <h2 class="text-xl font-bold tracking-tight" style="color: var(--t1);">Skills</h2>
-      <span class="text-[11px] uppercase tracking-widest" style="color: var(--t3);">· tech stack</span>
+  <!-- Orb accent -->
+  <div class="orb orb-c" style="width:450px; height:450px; top:-80px; right:-100px; opacity:0.45;"></div>
+
+  <div class="max-w-6xl mx-auto" style="position: relative; z-index: 1;">
+
+    <div class="mb-10 sr sr-up">
+      <p class="section-eyebrow">Tech Stack</p>
+      <h2 class="section-title">Skills</h2>
+      <p class="section-sub">Tools and technologies I use to turn data into insight.</p>
     </div>
 
     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-      {groups.map(group => (
-        <div class="pbi-visual">
+      {groups.map((group, i) => (
+        <div class={`pbi-visual tilt sr sr-d${i + 1}`}>
           <div class="pbi-header" style={`border-top: 3px solid ${group.color};`}>
             <span class="pbi-header-title" style={`color: ${group.color}; opacity: 0.85;`}>
               {group.category}
@@ -70,5 +74,5 @@ const groups = [
       ))}
     </div>
 
-  </div>
+  </div><!-- /max-w -->
 </section>
