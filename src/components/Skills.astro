@@ -30,9 +30,9 @@ const groups = [
     category: 'Certifications',
     color: '#7c3aed',
     skills: [
-      { name: 'Python Bootcamp',                 note: 'Udemy · 2025'      },
-      { name: 'SQL Bootcamp',                    note: 'Udemy'             },
-      { name: 'Power BI DA Associate',           note: 'In progress · Microsoft' },
+      { name: 'Python Bootcamp',        note: 'Udemy · 2025'              },
+      { name: 'SQL Bootcamp',           note: 'Udemy'                     },
+      { name: 'Power BI DA Associate',  note: 'In progress · Microsoft'   },
     ],
   },
 ];
@@ -42,9 +42,9 @@ const groups = [
   <div class="max-w-6xl mx-auto">
 
     <div class="flex items-center gap-3 mb-4">
-      <div class="w-1 h-6 bg-[#06b6d4] rounded-full"></div>
-      <h2 class="text-xl font-bold text-[#e6edf3] tracking-tight">Skills</h2>
-      <span class="text-[11px] text-[#8b949e] uppercase tracking-widest">· tech stack</span>
+      <div class="w-1 h-6 rounded-full" style="background: #06b6d4;"></div>
+      <h2 class="text-xl font-bold tracking-tight" style="color: var(--t1);">Skills</h2>
+      <span class="text-[11px] uppercase tracking-widest" style="color: var(--t3);">· tech stack</span>
     </div>
 
     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -56,12 +56,13 @@ const groups = [
             </span>
             <span class="pbi-header-dots">···</span>
           </div>
-
-          <div class="divide-y divide-[#2a2d35]">
+          <div style="divide-color: var(--border);">
             {group.skills.map(skill => (
-              <div class="px-4 py-3 hover:bg-[#111318] transition-colors">
-                <div class="text-[13px] font-medium text-[#e6edf3]">{skill.name}</div>
-                <div class="text-[11px] text-[#8b949e] mt-0.5">{skill.note}</div>
+              <div class="px-4 py-3 transition-colors" style="border-bottom: 1px solid var(--border-2);"
+                   onmouseover="this.style.background='var(--surface-2)'"
+                   onmouseout="this.style.background=''">
+                <div class="text-[13px] font-medium" style="color: var(--t1);">{skill.name}</div>
+                <div class="text-[11px] mt-0.5" style="color: var(--t3);">{skill.note}</div>
               </div>
             ))}
           </div>

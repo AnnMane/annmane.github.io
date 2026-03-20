@@ -1,47 +1,109 @@
 @import "tailwindcss";
 
-@theme {
-  --color-background: #111318;
-  --color-surface: #1a1d23;
-  --color-border: #2a2d35;
-  --color-accent-violet: #7c3aed;
-  --color-accent-cyan: #06b6d4;
-  --color-text-primary: #e6edf3;
-  --color-text-muted: #8b949e;
+/* ══════════════════════════════════════════════════════
+   THEME VARIABLES
+   ══════════════════════════════════════════════════════ */
+:root {
+  /* Dark theme (default) */
+  --bg:        #111318;
+  --bg-deep:   #0d1014;
+  --surface:   #1a1d23;
+  --surface-2: #13161c;
+  --border:    #2a2d35;
+  --border-2:  #21262d;
+
+  --t1: #e6edf3;
+  --t2: #c9d1d9;
+  --t3: #8b949e;
+  --t4: #4a5160;
+
+  --nav-bg:     rgba(17, 19, 24, 0.94);
+  --overlay-bg: rgba(13, 16, 20, 0.92);
+  --shadow:     0 4px 24px rgba(0, 0, 0, 0.45);
+  --shadow-sm:  0 2px 8px rgba(0, 0, 0, 0.3);
+
+  --dot: rgba(42, 45, 53, 0.65);
+
+  --accent-v: #7c3aed;
+  --accent-c: #06b6d4;
 }
 
+:root.light {
+  --bg:        #f0f3f8;
+  --bg-deep:   #e6eaf2;
+  --surface:   #ffffff;
+  --surface-2: #f6f8fc;
+  --border:    #d1d9e0;
+  --border-2:  #e5eaf0;
+
+  --t1: #1c2128;
+  --t2: #32383f;
+  --t3: #57606a;
+  --t4: #adb5bd;
+
+  --nav-bg:     rgba(255, 255, 255, 0.94);
+  --overlay-bg: rgba(240, 243, 248, 0.95);
+  --shadow:     0 4px 24px rgba(0, 0, 0, 0.08);
+  --shadow-sm:  0 2px 8px rgba(0, 0, 0, 0.06);
+
+  --dot: rgba(0, 0, 0, 0.05);
+}
+
+/* ══════════════════════════════════════════════════════
+   BASE
+   ══════════════════════════════════════════════════════ */
 html {
   scroll-behavior: smooth;
 }
 
+/* Smooth theme transition */
+html, html * {
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    color 0.2s ease,
+    box-shadow 0.25s ease;
+}
+/* Exclude transitions that would feel sluggish */
+html .cell,
+html .cell *,
+html [class*="animate"],
+html [class*="typing"] {
+  transition: none !important;
+}
+
 body {
-  background-color: #111318;
-  background-image: radial-gradient(circle, rgba(42, 45, 53, 0.7) 1px, transparent 1px);
+  background-color: var(--bg);
+  background-image: radial-gradient(circle, var(--dot) 1px, transparent 1px);
   background-size: 24px 24px;
-  color: #e6edf3;
+  color: var(--t1);
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
-/* ── Power BI visual card ─────────────────────── */
+/* ══════════════════════════════════════════════════════
+   POWER BI VISUAL CARD
+   ══════════════════════════════════════════════════════ */
 .pbi-visual {
-  background: #1a1d23;
-  border: 1px solid #2a2d35;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 4px;
   overflow: hidden;
-  transition: box-shadow 0.2s ease;
+  transition:
+    box-shadow 0.2s ease,
+    background-color 0.25s ease,
+    border-color 0.25s ease;
 }
 .pbi-visual:hover {
-  box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.3), 0 4px 20px rgba(0,0,0,0.4);
+  box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.3), var(--shadow);
 }
 
-/* Visual header (mimics PBI visual title bar) */
 .pbi-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 8px 14px;
-  background: #111318;
-  border-bottom: 1px solid #2a2d35;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
   gap: 8px;
 }
 .pbi-header-title {
@@ -49,7 +111,7 @@ body {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #8b949e;
+  color: var(--t3);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -60,37 +122,37 @@ body {
   width: 8px;
   height: 8px;
   border-radius: 2px;
-  background: #7c3aed;
+  background: var(--accent-v);
   flex-shrink: 0;
 }
 .pbi-header-dots {
   font-size: 14px;
-  color: #3d4149;
+  color: var(--border);
   letter-spacing: 1px;
   cursor: default;
   user-select: none;
 }
 
-/* KPI visual variant */
+/* ── KPI ────────────────────────────────────────── */
 .pbi-kpi-value {
   font-size: 2.5rem;
   font-weight: 700;
   line-height: 1;
-  background: linear-gradient(135deg, #7c3aed, #06b6d4);
+  background: linear-gradient(135deg, var(--accent-v), var(--accent-c));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 .pbi-kpi-label {
   font-size: 11px;
-  color: #8b949e;
+  color: var(--t3);
   margin-top: 4px;
 }
 
 /* ── Report header ─────────────────────────────── */
 .pbi-report-header {
-  background: #1a1d23;
-  border: 1px solid #2a2d35;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 4px;
   padding: 10px 16px;
   display: flex;
@@ -98,79 +160,96 @@ body {
   justify-content: space-between;
 }
 
-/* ── Page tabs (bottom) ───────────────────────── */
+/* ── Page tabs footer ──────────────────────────── */
 .pbi-page-tabs {
   display: flex;
-  border-top: 1px solid #2a2d35;
-  background: #111318;
+  border-top: 1px solid var(--border);
+  background: var(--bg);
 }
 .pbi-page-tab {
   padding: 8px 18px;
   font-size: 12px;
-  color: #8b949e;
-  border-right: 1px solid #2a2d35;
-  cursor: pointer;
-  transition: all 0.15s;
+  color: var(--t3);
+  border-right: 1px solid var(--border);
   text-decoration: none;
+  transition: color 0.15s, background 0.15s;
 }
-.pbi-page-tab:hover, .pbi-page-tab.active {
-  color: #e6edf3;
-  background: #1a1d23;
-  border-top: 2px solid #7c3aed;
+.pbi-page-tab:hover,
+.pbi-page-tab.active {
+  color: var(--t1);
+  background: var(--surface);
+  border-top: 2px solid var(--accent-v);
   margin-top: -1px;
 }
 
-/* ── Gradient text ────────────────────────────── */
+/* ══════════════════════════════════════════════════════
+   TECH BADGE
+   ══════════════════════════════════════════════════════ */
+.tech-badge {
+  padding: 2px 10px;
+  font-size: 11px;
+  border-radius: 2px;
+  background: rgba(124, 58, 237, 0.1);
+  border: 1px solid rgba(124, 58, 237, 0.22);
+  color: #a78bfa;
+  font-weight: 500;
+}
+.light .tech-badge {
+  background: rgba(124, 58, 237, 0.08);
+  border-color: rgba(124, 58, 237, 0.25);
+  color: #6d28d9;
+}
+
+/* ══════════════════════════════════════════════════════
+   GRADIENT TEXT
+   ══════════════════════════════════════════════════════ */
 .gradient-text {
-  background: linear-gradient(135deg, #7c3aed, #06b6d4);
+  background: linear-gradient(135deg, var(--accent-v), var(--accent-c));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* ── Tech badge ───────────────────────────────── */
-.tech-badge {
-  padding: 2px 10px;
-  font-size: 11px;
-  border-radius: 2px;
-  background: rgba(124, 58, 237, 0.12);
-  border: 1px solid rgba(124, 58, 237, 0.25);
-  color: #a78bfa;
-  font-weight: 500;
-}
-
-/* ── Typing animation ─────────────────────────── */
+/* ══════════════════════════════════════════════════════
+   TYPING CURSOR
+   ══════════════════════════════════════════════════════ */
 @keyframes blink {
   0%, 100% { opacity: 1 }
-  50% { opacity: 0 }
+  50%       { opacity: 0 }
 }
 .typing-cursor {
   display: inline-block;
   width: 2px;
   height: 1.1em;
-  background: #7c3aed;
+  background: var(--accent-v);
   margin-left: 2px;
   vertical-align: middle;
   animation: blink 0.8s step-end infinite;
 }
 
-/* ── Scrollbar ────────────────────────────────── */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #111318; }
-::-webkit-scrollbar-thumb { background: #2a2d35; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #7c3aed; }
-
-/* ── Section spacing ──────────────────────────── */
-.section { padding: 4rem 0; }
-
-/* ── Glass card (blog) ────────────────────────── */
+/* ══════════════════════════════════════════════════════
+   GLASS CARD (blog)
+   ══════════════════════════════════════════════════════ */
 .glass-card {
-  background: #1a1d23;
-  border: 1px solid #2a2d35;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 4px;
-  transition: all 0.2s ease;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 .glass-card:hover {
   border-color: rgba(124, 58, 237, 0.4);
-  box-shadow: 0 0 20px rgba(124, 58, 237, 0.12);
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.1);
 }
+
+/* ══════════════════════════════════════════════════════
+   SECTION
+   ══════════════════════════════════════════════════════ */
+.section { padding: 4rem 0; }
+
+/* ══════════════════════════════════════════════════════
+   SCROLLBAR
+   ══════════════════════════════════════════════════════ */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent-v); }

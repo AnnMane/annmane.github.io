@@ -9,25 +9,26 @@ const posts = (await getCollection('blog'))
 <Layout title="Blog — Anna Grzywa" description="Notes on data analysis, Python, Power BI and learning in public.">
   <main class="max-w-3xl mx-auto px-6 pt-32 pb-20">
     <h1 class="text-4xl font-bold mb-2 gradient-text">Blog</h1>
-    <p class="text-[#8b949e] mb-12">Notes on data, learning, and building things.</p>
+    <p class="mb-12 text-sm" style="color: var(--t3);">Notes on data, learning, and building things.</p>
 
     {posts.length === 0 ? (
-      <p class="text-[#8b949e]">No posts yet — stay tuned!</p>
+      <p style="color: var(--t3);">No posts yet — stay tuned!</p>
     ) : (
-      <ul class="space-y-6">
+      <ul class="space-y-4">
         {posts.map(post => (
           <li>
             <a href={`/blog/${post.id.replace(/\.md$/, '')}`} class="glass-card p-6 block group">
-              <time class="text-xs text-[#8b949e]">
+              <time class="text-xs" style="color: var(--t3);">
                 {post.data.date.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}
               </time>
-              <h2 class="mt-2 mb-2 text-xl font-semibold text-[#e6edf3] group-hover:text-white transition-colors">
+              <h2 class="mt-2 mb-2 text-xl font-semibold transition-colors" style="color: var(--t1);">
                 {post.data.title}
               </h2>
-              <p class="text-sm text-[#8b949e]">{post.data.description}</p>
+              <p class="text-sm" style="color: var(--t3);">{post.data.description}</p>
               <div class="flex flex-wrap gap-1.5 mt-4">
                 {post.data.tags?.map((tag: string) => (
-                  <span class="px-2 py-0.5 text-xs rounded-full bg-[#06b6d4]/10 border border-[#06b6d4]/20 text-[#22d3ee]">
+                  <span class="px-2 py-0.5 text-xs rounded-full"
+                        style="background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.2); color: #22d3ee;">
                     {tag}
                   </span>
                 ))}

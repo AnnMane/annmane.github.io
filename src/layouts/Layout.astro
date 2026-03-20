@@ -21,27 +21,39 @@ const {
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
+
+    <!-- No-flash theme script: runs before render -->
+    <script is:inline>
+      (function () {
+        const stored = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const isDark = stored ? stored === 'dark' : prefersDark;
+        if (!isDark) document.documentElement.classList.add('light');
+      })();
+    </script>
   </head>
   <body>
     <Navbar />
     <slot />
 
-    <!-- Power BI-style page tabs footer -->
-    <footer class="mt-16 border-t border-[#2a2d35]">
-      <!-- Page tabs row -->
+    <!-- Power BI page-tabs footer -->
+    <footer class="mt-16 border-t" style="border-color: var(--border);">
       <div class="pbi-page-tabs">
         <a href="/" class="pbi-page-tab active">Home</a>
         <a href="/#projects" class="pbi-page-tab">Projects</a>
         <a href="/#skills" class="pbi-page-tab">Skills</a>
         <a href="/blog" class="pbi-page-tab">Blog</a>
-        <div class="ml-auto px-4 flex items-center text-[11px] text-[#3d4149] gap-4">
-          <a href="https://www.linkedin.com/in/annagrzywa/" target="_blank" rel="noopener" class="hover:text-[#8b949e] transition-colors">LinkedIn</a>
-          <a href="mailto:a.grzywa01@gmail.com" class="hover:text-[#8b949e] transition-colors">a.grzywa01@gmail.com</a>
-          <a href="https://github.com/AnnMane" target="_blank" rel="noopener" class="hover:text-[#8b949e] transition-colors">GitHub</a>
+        <a href="/minesweeper" class="pbi-page-tab">💣 Play</a>
+        <div class="ml-auto px-4 flex items-center gap-4" style="font-size:11px; color: var(--border);">
+          <a href="https://www.linkedin.com/in/annagrzywa/" target="_blank" rel="noopener"
+             style="color: var(--t4);" class="hover:text-[var(--t3)] transition-colors">LinkedIn</a>
+          <a href="mailto:a.grzywa01@gmail.com"
+             style="color: var(--t4);" class="hover:text-[var(--t3)] transition-colors">a.grzywa01@gmail.com</a>
+          <a href="https://github.com/AnnMane" target="_blank" rel="noopener"
+             style="color: var(--t4);" class="hover:text-[var(--t3)] transition-colors">GitHub</a>
         </div>
       </div>
-      <!-- Status bar -->
-      <div class="bg-[#111318] border-t border-[#2a2d35] px-4 py-1.5 flex items-center justify-between text-[10px] text-[#3d4149]">
+      <div class="px-4 py-1.5 flex items-center justify-between" style="font-size:10px; color: var(--border); background: var(--bg);">
         <span>Anna Grzywa · Data Analytics Portfolio</span>
         <span>© 2026</span>
       </div>

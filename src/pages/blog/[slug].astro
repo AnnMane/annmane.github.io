@@ -16,89 +16,64 @@ const { Content } = await render(post);
 
 <Layout title={`${post.data.title} — Anna Grzywa`} description={post.data.description}>
   <main class="max-w-2xl mx-auto px-6 pt-32 pb-20">
-    <a href="/blog" class="inline-flex items-center gap-1 text-sm text-[#8b949e] hover:text-[#e6edf3] transition-colors mb-8">
+    <a href="/blog" class="inline-flex items-center gap-1 text-sm mb-8 transition-colors"
+       style="color: var(--t3);"
+       onmouseover="this.style.color='var(--t1)'" onmouseout="this.style.color='var(--t3)'">
       ← Back to blog
     </a>
 
     <article>
       <header class="mb-8">
-        <time class="text-xs text-[#8b949e]">
+        <time class="text-xs" style="color: var(--t3);">
           {post.data.date.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}
         </time>
-        <h1 class="text-3xl sm:text-4xl font-bold text-[#e6edf3] mt-2 mb-4 leading-tight">
+        <h1 class="text-3xl sm:text-4xl font-bold mt-2 mb-4 leading-tight" style="color: var(--t1);">
           {post.data.title}
         </h1>
         <div class="flex flex-wrap gap-1.5">
           {post.data.tags?.map((tag: string) => (
-            <span class="px-2 py-0.5 text-xs rounded-full bg-[#06b6d4]/10 border border-[#06b6d4]/20 text-[#22d3ee]">
+            <span class="px-2 py-0.5 text-xs rounded-full"
+                  style="background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.2); color: #22d3ee;">
               {tag}
             </span>
           ))}
         </div>
       </header>
 
-      <div class="prose-content text-[#e6edf3]/90 leading-relaxed space-y-4">
+      <div class="prose-content leading-relaxed space-y-4">
         <Content />
       </div>
     </article>
   </main>
 </Layout>
 
-<style>
-  .prose-content :global(h2) {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #e6edf3;
-    margin-top: 2rem;
-    margin-bottom: 0.75rem;
+<style is:global>
+  .prose-content h2 {
+    font-size: 1.5rem; font-weight: 700; color: var(--t1);
+    margin-top: 2rem; margin-bottom: 0.75rem;
   }
-  .prose-content :global(h3) {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #e6edf3;
-    margin-top: 1.5rem;
-    margin-bottom: 0.5rem;
+  .prose-content h3 {
+    font-size: 1.2rem; font-weight: 600; color: var(--t1);
+    margin-top: 1.5rem; margin-bottom: 0.5rem;
   }
-  .prose-content :global(p) {
-    margin-bottom: 1rem;
-    color: #c9d1d9;
+  .prose-content p  { margin-bottom: 1rem; color: var(--t2); }
+  .prose-content ul { list-style: disc; padding-left: 1.5rem; margin-bottom: 1rem; color: var(--t2); }
+  .prose-content li { margin-bottom: 0.25rem; }
+  .prose-content strong { color: var(--t1); font-weight: 600; }
+  .prose-content code {
+    background: rgba(124, 58, 237, 0.12); color: #a78bfa;
+    padding: 0.1em 0.4em; border-radius: 4px; font-size: 0.875em;
   }
-  .prose-content :global(ul) {
-    list-style: disc;
-    padding-left: 1.5rem;
-    margin-bottom: 1rem;
-    color: #c9d1d9;
+  .light .prose-content code {
+    background: rgba(124, 58, 237, 0.08); color: #6d28d9;
   }
-  .prose-content :global(li) {
-    margin-bottom: 0.25rem;
+  .prose-content pre {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; padding: 1rem; overflow-x: auto; margin-bottom: 1rem;
   }
-  .prose-content :global(strong) {
-    color: #e6edf3;
-    font-weight: 600;
-  }
-  .prose-content :global(code) {
-    background: rgba(124, 58, 237, 0.15);
-    color: #a78bfa;
-    padding: 0.1em 0.4em;
-    border-radius: 4px;
-    font-size: 0.875em;
-  }
-  .prose-content :global(pre) {
-    background: #161b22;
-    border: 1px solid #30363d;
-    border-radius: 8px;
-    padding: 1rem;
-    overflow-x: auto;
-    margin-bottom: 1rem;
-  }
-  .prose-content :global(a) {
-    color: #7c3aed;
-    text-decoration: underline;
-  }
-  .prose-content :global(blockquote) {
-    border-left: 3px solid #7c3aed;
-    padding-left: 1rem;
-    color: #8b949e;
-    font-style: italic;
+  .prose-content a { color: #7c3aed; text-decoration: underline; }
+  .prose-content blockquote {
+    border-left: 3px solid #7c3aed; padding-left: 1rem;
+    color: var(--t3); font-style: italic;
   }
 </style>
