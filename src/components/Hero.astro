@@ -1,133 +1,187 @@
 ---
+const kpis = [
+  { value: '5+',   label: 'Years Experience', sub: 'Management & Analytics' },
+  { value: '3',    label: 'Projects Built',   sub: 'Python · Power BI · SQL'  },
+  { value: '10+',  label: 'Tools & Tech',     sub: 'Stack size'               },
+  { value: '2026', label: 'KPMG Intern',      sub: 'Data & Analytics'         },
+];
+
+const bars = [
+  { name: 'Power BI',  pct: 82, color: '#f2c80f' },
+  { name: 'Excel',     pct: 78, color: '#107C41' },
+  { name: 'Python',    pct: 65, color: '#3776ab' },
+  { name: 'SQL',       pct: 60, color: '#06b6d4' },
+  { name: 'Alteryx',   pct: 42, color: '#7c3aed' },
+];
 ---
 
-<section class="min-h-screen flex items-center justify-center pt-20 px-6">
-  <div class="max-w-3xl mx-auto text-center">
-    <!-- Greeting -->
-    <p class="text-[#8b949e] text-sm tracking-widest uppercase mb-4">Hi, I'm</p>
+<section class="min-h-screen pt-20 pb-10 px-4">
+  <div class="max-w-6xl mx-auto flex flex-col gap-3">
 
-    <!-- Name -->
-    <h1 class="text-5xl sm:text-7xl font-bold mb-4 gradient-text">
-      Anna Grzywa
-    </h1>
-
-    <!-- Animated subtitle -->
-    <div class="h-10 flex items-center justify-center mb-6">
-      <p id="typing-subtitle" class="text-lg sm:text-xl text-[#8b949e] typing-text"></p>
+    <!-- Report header bar -->
+    <div class="pbi-report-header">
+      <div class="flex items-center gap-2">
+        <svg width="14" height="14" viewBox="0 0 12 12" fill="#7c3aed" class="shrink-0">
+          <rect x="0" y="5" width="3" height="7" rx="0.5"/>
+          <rect x="4.5" y="2.5" width="3" height="9.5" rx="0.5"/>
+          <rect x="9" y="0" width="3" height="12" rx="0.5"/>
+        </svg>
+        <span class="text-[13px] font-semibold text-[#e6edf3]">Anna Grzywa</span>
+        <span class="text-[#2a2d35]">|</span>
+        <span class="text-[12px] text-[#8b949e]">Data Analytics Portfolio</span>
+      </div>
+      <div class="flex items-center gap-4 text-[11px] text-[#8b949e]">
+        <span class="flex items-center gap-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>
+          Live · March 2026
+        </span>
+        <span class="hidden sm:block">Silesia, Poland</span>
+      </div>
     </div>
 
-    <!-- Bio -->
-    <p class="text-[#e6edf3]/80 text-lg leading-relaxed max-w-2xl mx-auto mb-10">
-      Aspiring Data Analyst with a Master's in Digital Economy, building end-to-end
-      data projects in Python, SQL and Power BI. Currently a Data &amp; Analytics Intern
-      at KPMG, turning raw data into decisions.
-    </p>
-
-    <!-- CTA buttons -->
-    <div class="flex flex-wrap gap-4 justify-center mb-12">
-      <a
-        href="#projects"
-        class="px-7 py-3 rounded-full bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-medium transition-colors duration-200"
-      >
-        See Projects
-      </a>
-      <a
-        href="/cv.pdf"
-        target="_blank"
-        rel="noopener"
-        class="px-7 py-3 rounded-full border border-[#30363d] text-[#e6edf3] hover:border-[#7c3aed] hover:text-[#7c3aed] font-medium transition-colors duration-200"
-      >
-        Download CV
-      </a>
+    <!-- KPI tiles row -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      {kpis.map(kpi => (
+        <div class="pbi-visual">
+          <div class="pbi-header">
+            <span class="pbi-header-title">{kpi.label}</span>
+            <span class="pbi-header-dots">···</span>
+          </div>
+          <div class="px-4 py-4">
+            <div class="pbi-kpi-value">{kpi.value}</div>
+            <div class="pbi-kpi-label">{kpi.sub}</div>
+          </div>
+        </div>
+      ))}
     </div>
 
-    <!-- Social links -->
-    <div class="flex gap-5 justify-center">
-      <!-- GitHub -->
-      <a
-        href="https://github.com/AnnMane"
-        target="_blank"
-        rel="noopener"
-        aria-label="GitHub"
-        class="text-[#8b949e] hover:text-[#e6edf3] transition-colors duration-200"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.6.113.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
-        </svg>
-      </a>
-      <!-- LinkedIn -->
-      <a
-        href="https://linkedin.com/in/annagrzywa"
-        target="_blank"
-        rel="noopener"
-        aria-label="LinkedIn"
-        class="text-[#8b949e] hover:text-[#e6edf3] transition-colors duration-200"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-        </svg>
-      </a>
-      <!-- Email -->
-      <a
-        href="mailto:a.grzywa01@gmail.com"
-        aria-label="Email"
-        class="text-[#8b949e] hover:text-[#e6edf3] transition-colors duration-200"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect width="20" height="16" x="2" y="4" rx="2"/>
-          <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
-        </svg>
-      </a>
+    <!-- Main row: profile + chart -->
+    <div class="grid gap-3 lg:grid-cols-3">
+
+      <!-- Profile visual (2/3) -->
+      <div class="pbi-visual lg:col-span-2">
+        <div class="pbi-header">
+          <span class="pbi-header-title">Profile</span>
+          <span class="pbi-header-dots">···</span>
+        </div>
+        <div class="px-6 py-7 flex flex-col gap-5">
+
+          <!-- Name + animated subtitle -->
+          <div>
+            <h1 class="text-4xl sm:text-5xl font-bold gradient-text mb-3">Anna Grzywa</h1>
+            <div class="flex items-center h-7">
+              <span id="typing-subtitle" class="text-base text-[#8b949e] font-mono"></span>
+              <span class="typing-cursor"></span>
+            </div>
+          </div>
+
+          <!-- Bio -->
+          <p class="text-[#c9d1d9] text-sm leading-relaxed max-w-xl">
+            Aspiring Data Analyst with a Master's in Digital Economy, building end-to-end
+            data projects in Python, SQL and Power BI. Currently a Data &amp; Analytics Intern
+            at KPMG — turning raw datasets into decisions that matter.
+          </p>
+
+          <!-- Contact buttons -->
+          <div class="flex flex-wrap items-center gap-3">
+            <a
+              href="https://www.linkedin.com/in/annagrzywa/"
+              target="_blank"
+              rel="noopener"
+              class="inline-flex items-center gap-2 px-4 py-2 rounded-[3px] bg-[#0a66c2] hover:bg-[#0958a8] text-white text-sm font-medium transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+              </svg>
+              LinkedIn
+            </a>
+            <a
+              href="mailto:a.grzywa01@gmail.com"
+              class="inline-flex items-center gap-2 px-4 py-2 rounded-[3px] border border-[#2a2d35] text-[#c9d1d9] hover:border-[#7c3aed] hover:text-[#a78bfa] text-sm font-medium transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="20" height="16" x="2" y="4" rx="2"/>
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+              </svg>
+              a.grzywa01@gmail.com
+            </a>
+            <a
+              href="#projects"
+              class="inline-flex items-center gap-2 px-4 py-2 rounded-[3px] bg-[#7c3aed] hover:bg-[#6d28d9] text-white text-sm font-medium transition-colors"
+            >
+              See projects →
+            </a>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Tech stack bar chart (1/3) -->
+      <div class="pbi-visual">
+        <div class="pbi-header">
+          <span class="pbi-header-title">Tech Stack</span>
+          <span class="pbi-header-dots">···</span>
+        </div>
+        <div class="px-5 py-5 flex flex-col gap-3.5">
+          {bars.map(bar => (
+            <div>
+              <div class="flex justify-between text-[11px] mb-1">
+                <span class="text-[#c9d1d9]">{bar.name}</span>
+                <span class="text-[#8b949e]">{bar.pct}%</span>
+              </div>
+              <div class="h-[6px] rounded-sm bg-[#111318] overflow-hidden">
+                <div
+                  class="h-full rounded-sm bar-fill"
+                  style={`width: ${bar.pct}%; background: ${bar.color};`}
+                ></div>
+              </div>
+            </div>
+          ))}
+          <p class="text-[10px] text-[#8b949e] mt-1 italic">Based on project experience</p>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
 
 <script>
-  const subtitles = [
-    'Data Analyst',
-    'KPMG Intern',
-    'Python · Power BI · SQL',
-  ];
-  let currentIndex = 0;
+  const subtitles = ['Data Analyst', 'KPMG Intern', 'Python · Power BI · SQL'];
+  let idx = 0;
   const el = document.getElementById('typing-subtitle');
 
   function typeText(text: string, cb: () => void) {
     if (!el) return;
     el.textContent = '';
-    el.classList.add('typing-text');
     let i = 0;
-    const interval = setInterval(() => {
-      el.textContent += text[i];
-      i++;
-      if (i >= text.length) {
-        clearInterval(interval);
-        setTimeout(cb, 1800);
-      }
-    }, 60);
+    const iv = setInterval(() => {
+      el.textContent += text[i++];
+      if (i >= text.length) { clearInterval(iv); setTimeout(cb, 1800); }
+    }, 65);
   }
 
   function eraseText(cb: () => void) {
     if (!el) return;
-    const text = el.textContent || '';
-    let i = text.length;
-    const interval = setInterval(() => {
-      el.textContent = text.slice(0, i - 1);
-      i--;
-      if (i <= 0) {
-        clearInterval(interval);
-        cb();
-      }
+    let i = (el.textContent || '').length;
+    const iv = setInterval(() => {
+      el.textContent = (el.textContent || '').slice(0, --i);
+      if (i <= 0) { clearInterval(iv); cb(); }
     }, 35);
   }
 
   function loop() {
-    typeText(subtitles[currentIndex], () => {
-      eraseText(() => {
-        currentIndex = (currentIndex + 1) % subtitles.length;
-        loop();
-      });
-    });
+    typeText(subtitles[idx], () => eraseText(() => { idx = (idx + 1) % subtitles.length; loop(); }));
   }
-
   loop();
 </script>
+
+<style>
+  .bar-fill {
+    animation: grow 1s ease-out forwards;
+    transform-origin: left;
+  }
+  @keyframes grow {
+    from { clip-path: inset(0 100% 0 0); }
+    to   { clip-path: inset(0 0% 0 0);   }
+  }
+</style>

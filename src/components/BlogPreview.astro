@@ -6,39 +6,47 @@ const posts = (await getCollection('blog'))
   .slice(0, 3);
 ---
 
-<section id="blog" class="section px-6">
-  <div class="max-w-5xl mx-auto">
-    <div class="flex items-end justify-between mb-2">
-      <h2 class="text-3xl font-bold gradient-text">Blog</h2>
-      <a href="/blog" class="text-sm text-[#7c3aed] hover:text-[#a78bfa] transition-colors">
+<section id="blog" class="section px-4">
+  <div class="max-w-6xl mx-auto">
+
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-1 h-6 bg-[#a855f7] rounded-full"></div>
+      <h2 class="text-xl font-bold text-[#e6edf3] tracking-tight">Blog</h2>
+      <span class="text-[11px] text-[#8b949e] uppercase tracking-widest">· notes & learning</span>
+      <a href="/blog" class="ml-auto text-[12px] text-[#7c3aed] hover:text-[#a78bfa] transition-colors">
         All posts →
       </a>
     </div>
-    <p class="text-[#8b949e] mb-12">Notes on data, learning, and building things.</p>
 
     {posts.length === 0 ? (
-      <p class="text-[#8b949e]">No posts yet — stay tuned!</p>
+      <div class="pbi-visual px-5 py-8 text-[#8b949e] text-sm">No posts yet — stay tuned!</div>
     ) : (
-      <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {posts.map(post => (
-          <a href={`/blog/${post.id.replace(/\.md$/, '')}`} class="glass-card p-6 block group">
-            <time class="text-xs text-[#8b949e]">
-              {post.data.date.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}
-            </time>
-            <h3 class="mt-2 mb-2 font-semibold text-[#e6edf3] group-hover:text-white transition-colors leading-snug">
-              {post.data.title}
-            </h3>
-            <p class="text-sm text-[#8b949e] line-clamp-3">{post.data.description}</p>
-            <div class="flex flex-wrap gap-1.5 mt-4">
-              {post.data.tags?.map((tag: string) => (
-                <span class="px-2 py-0.5 text-xs rounded-full bg-[#06b6d4]/10 border border-[#06b6d4]/20 text-[#22d3ee]">
-                  {tag}
-                </span>
-              ))}
+          <a href={`/blog/${post.id.replace(/\.md$/, '')}`} class="pbi-visual block group">
+            <div class="pbi-header" style="border-top: 3px solid #a855f7;">
+              <time class="text-[11px] text-[#8b949e]">
+                {post.data.date.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' })}
+              </time>
+              <span class="pbi-header-dots">···</span>
+            </div>
+            <div class="px-5 py-4">
+              <h3 class="text-[14px] font-semibold text-[#e6edf3] group-hover:text-white transition-colors leading-snug mb-2">
+                {post.data.title}
+              </h3>
+              <p class="text-[12px] text-[#8b949e] line-clamp-3 mb-3">{post.data.description}</p>
+              <div class="flex flex-wrap gap-1.5">
+                {post.data.tags?.map((tag: string) => (
+                  <span class="px-2 py-0.5 text-[10px] rounded-[2px] bg-[#7c3aed]/10 border border-[#7c3aed]/20 text-[#a78bfa]">
+                    {tag}
+                  </span>
+                ))}
+              </div>
             </div>
           </a>
         ))}
       </div>
     )}
+
   </div>
 </section>

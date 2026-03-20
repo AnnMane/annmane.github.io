@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #0d1117;
-  --color-surface: #161b22;
-  --color-border: #30363d;
+  --color-background: #111318;
+  --color-surface: #1a1d23;
+  --color-border: #2a2d35;
   --color-accent-violet: #7c3aed;
   --color-accent-cyan: #06b6d4;
   --color-text-primary: #e6edf3;
@@ -15,45 +15,112 @@ html {
 }
 
 body {
-  background-color: #0d1117;
+  background-color: #111318;
+  background-image: radial-gradient(circle, rgba(42, 45, 53, 0.7) 1px, transparent 1px);
+  background-size: 24px 24px;
   color: #e6edf3;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
-/* Typing animation */
-@keyframes typing {
-  from { width: 0 }
-  to { width: 100% }
-}
-
-@keyframes blink {
-  0%, 100% { border-color: transparent }
-  50% { border-color: #7c3aed }
-}
-
-.typing-text {
+/* ── Power BI visual card ─────────────────────── */
+.pbi-visual {
+  background: #1a1d23;
+  border: 1px solid #2a2d35;
+  border-radius: 4px;
   overflow: hidden;
-  white-space: nowrap;
-  border-right: 2px solid #7c3aed;
-  animation: typing 2.5s steps(40, end) forwards, blink 0.8s step-end infinite;
+  transition: box-shadow 0.2s ease;
+}
+.pbi-visual:hover {
+  box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.3), 0 4px 20px rgba(0,0,0,0.4);
 }
 
-/* Glassmorphism card */
-.glass-card {
-  background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  transition: all 0.3s ease;
+/* Visual header (mimics PBI visual title bar) */
+.pbi-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  background: #111318;
+  border-bottom: 1px solid #2a2d35;
+  gap: 8px;
+}
+.pbi-header-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #8b949e;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.pbi-header-title::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: #7c3aed;
+  flex-shrink: 0;
+}
+.pbi-header-dots {
+  font-size: 14px;
+  color: #3d4149;
+  letter-spacing: 1px;
+  cursor: default;
+  user-select: none;
 }
 
-.glass-card:hover {
-  border-color: rgba(124, 58, 237, 0.4);
-  box-shadow: 0 0 24px rgba(124, 58, 237, 0.15);
-  transform: translateY(-2px);
+/* KPI visual variant */
+.pbi-kpi-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1;
+  background: linear-gradient(135deg, #7c3aed, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.pbi-kpi-label {
+  font-size: 11px;
+  color: #8b949e;
+  margin-top: 4px;
 }
 
-/* Gradient text */
+/* ── Report header ─────────────────────────────── */
+.pbi-report-header {
+  background: #1a1d23;
+  border: 1px solid #2a2d35;
+  border-radius: 4px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ── Page tabs (bottom) ───────────────────────── */
+.pbi-page-tabs {
+  display: flex;
+  border-top: 1px solid #2a2d35;
+  background: #111318;
+}
+.pbi-page-tab {
+  padding: 8px 18px;
+  font-size: 12px;
+  color: #8b949e;
+  border-right: 1px solid #2a2d35;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-decoration: none;
+}
+.pbi-page-tab:hover, .pbi-page-tab.active {
+  color: #e6edf3;
+  background: #1a1d23;
+  border-top: 2px solid #7c3aed;
+  margin-top: -1px;
+}
+
+/* ── Gradient text ────────────────────────────── */
 .gradient-text {
   background: linear-gradient(135deg, #7c3aed, #06b6d4);
   -webkit-background-clip: text;
@@ -61,13 +128,49 @@ body {
   background-clip: text;
 }
 
-/* Section padding */
-.section {
-  padding: 5rem 0;
+/* ── Tech badge ───────────────────────────────── */
+.tech-badge {
+  padding: 2px 10px;
+  font-size: 11px;
+  border-radius: 2px;
+  background: rgba(124, 58, 237, 0.12);
+  border: 1px solid rgba(124, 58, 237, 0.25);
+  color: #a78bfa;
+  font-weight: 500;
 }
 
-/* Scrollbar */
+/* ── Typing animation ─────────────────────────── */
+@keyframes blink {
+  0%, 100% { opacity: 1 }
+  50% { opacity: 0 }
+}
+.typing-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.1em;
+  background: #7c3aed;
+  margin-left: 2px;
+  vertical-align: middle;
+  animation: blink 0.8s step-end infinite;
+}
+
+/* ── Scrollbar ────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #0d1117; }
-::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
+::-webkit-scrollbar-track { background: #111318; }
+::-webkit-scrollbar-thumb { background: #2a2d35; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #7c3aed; }
+
+/* ── Section spacing ──────────────────────────── */
+.section { padding: 4rem 0; }
+
+/* ── Glass card (blog) ────────────────────────── */
+.glass-card {
+  background: #1a1d23;
+  border: 1px solid #2a2d35;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+.glass-card:hover {
+  border-color: rgba(124, 58, 237, 0.4);
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.12);
+}
