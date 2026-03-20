@@ -1,0 +1,99 @@
+---
+const projects = [
+  {
+    title: 'IT Job Market Analysis Dashboard',
+    year: '2026',
+    description:
+      'End-to-end ETL pipeline scraping 2,400+ job postings with Python & BeautifulSoup, modeled into a Star Schema with bridge tables, and visualized in a 3-page interactive Power BI dashboard exposing salary vs. skill trends.',
+    highlights: [
+      'Scraped 2,400+ active job postings',
+      'Star Schema with bridge table for many-to-many skills',
+      'DAX context transition for dynamic salary averages',
+      'Interactive 3-page UX-focused dashboard',
+    ],
+    tech: ['Python', 'Power BI', 'BeautifulSoup', 'Pandas', 'DAX', 'Power Query'],
+    github: 'https://github.com/AnnMane',
+    accent: '#7c3aed',
+  },
+  {
+    title: 'Global Streaming Catalog Analysis',
+    year: '2025',
+    description:
+      'Combined Netflix, Amazon, and Disney+ datasets into a single analytical model using Power Query. Engineered composite Primary Keys to resolve cross-platform ID collisions. Delivered a dark-mode dashboard with drill-through navigation.',
+    highlights: [
+      'Unified 3 streaming platforms into one model',
+      'Composite PKs resolving cross-platform ID collisions',
+      'Dark-mode dashboard with custom navigation & drill-through',
+    ],
+    tech: ['Power BI', 'Power Query', 'DAX'],
+    github: 'https://github.com/AnnMane',
+    accent: '#06b6d4',
+  },
+  {
+    title: 'Saper / Minesweeper',
+    year: '2024',
+    description:
+      'A fully functional Minesweeper game built from scratch in Python with a graphical interface using Tkinter. Implements classic gameplay mechanics including recursive cell reveal and flag marking.',
+    highlights: [
+      'Full Minesweeper mechanics in Python',
+      'Tkinter GUI with responsive grid',
+      'Recursive flood-fill cell reveal algorithm',
+    ],
+    tech: ['Python', 'Tkinter'],
+    github: 'https://github.com/AnnMane',
+    accent: '#7c3aed',
+  },
+];
+---
+
+<section id="projects" class="section px-6">
+  <div class="max-w-5xl mx-auto">
+    <h2 class="text-3xl font-bold mb-2 gradient-text">Projects</h2>
+    <p class="text-[#8b949e] mb-12">End-to-end data projects from concept to deployment.</p>
+
+    <div class="grid gap-6 md:grid-cols-1 lg:grid-cols-1">
+      {projects.map((project) => (
+        <article class="glass-card p-7 group">
+          <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
+            <div>
+              <h3 class="text-xl font-bold text-[#e6edf3] group-hover:text-white transition-colors">
+                {project.title}
+              </h3>
+              <span class="text-xs text-[#8b949e]">{project.year}</span>
+            </div>
+            <a
+              href={project.github}
+              target="_blank"
+              rel="noopener"
+              aria-label="GitHub"
+              class="shrink-0 text-[#8b949e] hover:text-[#e6edf3] transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.6.113.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+              </svg>
+            </a>
+          </div>
+
+          <p class="text-[#8b949e] text-sm leading-relaxed mb-5">{project.description}</p>
+
+          <ul class="space-y-1 mb-5">
+            {project.highlights.map(h => (
+              <li class="flex items-start gap-2 text-sm text-[#e6edf3]/70">
+                <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#7c3aed] shrink-0"></span>
+                {h}
+              </li>
+            ))}
+          </ul>
+
+          <div class="flex flex-wrap gap-2">
+            {project.tech.map(t => (
+              <span class="px-2.5 py-1 text-xs rounded-full bg-[#7c3aed]/10 border border-[#7c3aed]/20 text-[#a78bfa]">
+                {t}
+              </span>
+            ))}
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

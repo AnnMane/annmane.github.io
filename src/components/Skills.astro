@@ -1,0 +1,66 @@
+---
+const skillGroups = [
+  {
+    category: 'Data Visualization',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="18" y="3" width="4" height="18"/><rect x="10" y="8" width="4" height="13"/><rect x="2" y="13" width="4" height="8"/></svg>`,
+    skills: [
+      { name: 'Power BI', note: 'DAX · Power Query · Data Modeling' },
+      { name: 'Excel', note: 'Pivot Tables · Advanced Functions' },
+    ],
+  },
+  {
+    category: 'Languages & Databases',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>`,
+    skills: [
+      { name: 'Python', note: 'Pandas · NumPy · Matplotlib · BeautifulSoup' },
+      { name: 'SQL', note: 'PostgreSQL · Queries · Joins' },
+    ],
+  },
+  {
+    category: 'Tools & Environment',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>`,
+    skills: [
+      { name: 'Git & GitHub', note: 'Version control · Collaboration' },
+      { name: 'VS Code', note: 'Primary IDE' },
+      { name: 'Alteryx', note: 'Workflow automation · Data preparation' },
+      { name: 'Caseware IDEA', note: 'Audit analytics' },
+      { name: 'Linux / WSL', note: 'Ubuntu terminal' },
+    ],
+  },
+  {
+    category: 'Certifications',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>`,
+    skills: [
+      { name: 'Power BI Data Analyst Associate', note: 'Microsoft / Udemy' },
+      { name: 'Python Bootcamp', note: 'Udemy · 2025' },
+      { name: 'SQL Bootcamp', note: 'Udemy' },
+    ],
+  },
+];
+---
+
+<section id="skills" class="section px-6 bg-[#161b22]/40">
+  <div class="max-w-5xl mx-auto">
+    <h2 class="text-3xl font-bold mb-2 gradient-text">Skills</h2>
+    <p class="text-[#8b949e] mb-12">Technologies and tools I work with.</p>
+
+    <div class="grid gap-5 sm:grid-cols-2">
+      {skillGroups.map(group => (
+        <div class="glass-card p-6">
+          <div class="flex items-center gap-3 mb-5">
+            <span class="text-[#7c3aed]" set:html={group.icon} />
+            <h3 class="font-semibold text-[#e6edf3]">{group.category}</h3>
+          </div>
+          <ul class="space-y-3">
+            {group.skills.map(skill => (
+              <li class="flex flex-col gap-0.5">
+                <span class="text-sm font-medium text-[#e6edf3]">{skill.name}</span>
+                <span class="text-xs text-[#8b949e]">{skill.note}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

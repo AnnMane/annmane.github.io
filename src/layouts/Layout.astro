@@ -1,0 +1,32 @@
+---
+import '../styles/global.css';
+import Navbar from '../components/Navbar.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Anna Grzywa — Data Analyst',
+  description = 'Portfolio of Anna Grzywa — Data Analyst, KPMG Intern, Python & Power BI specialist.'
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <Navbar />
+    <slot />
+    <footer class="border-t border-[#30363d] py-8 mt-16 text-center text-[#8b949e] text-sm">
+      <p>© 2026 Anna Grzywa · Built with Astro & Tailwind CSS</p>
+    </footer>
+  </body>
+</html>
